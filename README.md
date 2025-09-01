@@ -149,7 +149,7 @@ job-board/
   lastName: string          // Required
   email: string            // Required, unique
   phone?: string           // Optional
-  cvFileName: string       // Required - uploaded CV filename
+  resume: string           // Required - resume text content
   submittedAt: Date        // Application submission time
   createdAt: Date         // Auto-generated
   updatedAt: Date         // Auto-generated
@@ -161,18 +161,33 @@ job-board/
 The application includes comprehensive MongoDB scripts to generate realistic test data:
 
 - **6 job postings** across various industries
-- **10 candidate profiles** with complete information
+- **10 candidate profiles** with professional resume text
 - **60 total applications** (every candidate linked to every job)
-- **Random percentage scores** for candidate matching
+- **AI-powered percentage scores** using OpenAI GPT-3.5 Turbo
+- **Realistic distribution** (70% below 50%, 30% above 50% threshold)
 - **Proper database indexes** for optimal performance
 
 See `mongodb-scripts/README.md` for detailed setup instructions.
+
+## OpenAI Integration
+
+### Automatic Candidate-Job Matching
+- **New Candidate Applications**: Automatically analyzed against all existing jobs
+- **New Job Postings**: Automatically matched against all existing candidates
+- **Real-time AI Analysis**: Uses GPT-3.5 Turbo for intelligent percentage scoring
+- **Graceful Fallbacks**: Application continues to work without OpenAI API key
+
+### AI-Powered Features
+- **Resume Analysis**: Expert recruiter-level evaluation of candidate fit
+- **Bi-directional Matching**: Both candidates and jobs get AI-calculated percentages
+- **Intelligent Filtering**: Only candidates above 50% match threshold displayed
+- **No Fake Data**: Real AI percentages only, no fallback random numbers
 
 ## Key Features
 
 ### Application Form (Homepage)
 - Server-side rendered form with proper validation
-- File upload support for CV/resume
+- Text-based resume input with professional content
 - Success/error message handling
 - Clean, professional design
 
@@ -199,10 +214,11 @@ See `mongodb-scripts/README.md` for detailed setup instructions.
 The application uses:
 - **Server-side rendering** with Next.js App Router for better SEO and performance
 - **MongoDB** for data persistence with both native driver and Mongoose
+- **OpenAI GPT-3.5 Turbo** for intelligent candidate-job matching
 - **TypeScript** for type safety throughout the application
 - **Tailwind CSS** for consistent, responsive styling
 - **Form handling** with both client-side and server-side approaches
-- **File uploads** with multipart form data support
+- **Text-based resume system** with AI analysis
 
 ## Contributing
 

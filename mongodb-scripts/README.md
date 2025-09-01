@@ -169,7 +169,8 @@ The mock data supports testing of:
 
 ### Candidate Filtering
 - **Qualification threshold** at 50% match score
-- **Realistic distribution** - most candidates don't qualify
+- **AI-powered scoring** - uses OpenAI GPT-3.5 Turbo for real analysis
+- **Realistic distribution** - most candidates don't qualify (70% below 50%)
 - **Dynamic displays** - only qualified candidates shown in job listings
 - **Expand/collapse** functionality for viewing all qualified candidates
 
@@ -180,11 +181,18 @@ The mock data supports testing of:
 
 ## Environment Variables
 
-Make sure your `.env` file has the correct MongoDB URI:
+Make sure your `.env` file has the correct configuration:
 
 ```env
+# Database Configuration
 MONGODB_URI=mongodb://localhost:27017/job-board
+
+# OpenAI Configuration (Required for AI-powered matching)
+# Get your API key from: https://platform.openai.com/api-keys
+OPENAI_API_KEY=your_openai_api_key_here
 ```
+
+**Note:** The mock data scripts use the percentage distribution algorithm (70% below 50%, 30% above 50%) but when you use the live application with real OpenAI integration, you'll get actual AI-calculated percentages.
 
 ## Troubleshooting
 
@@ -207,11 +215,24 @@ MONGODB_URI=mongodb://localhost:27017/job-board
 
 After creating mock data:
 
-1. Start your Next.js application: `npm run dev`
-2. Visit `/recruiter` to see job listings with qualified candidates
-3. Visit `/jobs/[id]` to see individual job details
-4. Click on candidates to view their detailed profiles and resume text
-5. Submit new applications via the homepage form (text-based resume)
-6. Test the expand/collapse functionality for candidate lists
+1. **Set up OpenAI** (optional but recommended):
+   - Add your OpenAI API key to `.env` file
+   - This enables real AI-powered candidate matching
 
-The application will now display realistic candidate data with professional resumes and proper filtering!
+2. **Start your Next.js application**: `npm run dev`
+
+3. **Test the application**:
+   - Visit `/recruiter` to see job listings with qualified candidates
+   - Visit `/jobs/[id]` to see individual job details
+   - Click on candidates to view their detailed profiles and resume text
+
+4. **Test AI integration** (if OpenAI configured):
+   - Submit new applications via homepage form → AI matches against all jobs
+   - Post new jobs via recruiter dashboard → AI matches against all candidates
+   - Check console logs for "OpenAI analysis complete" messages
+
+5. **Test UI features**:
+   - Expand/collapse functionality for candidate lists
+   - Real-time filtering of qualified candidates (>50% match)
+
+The application will display either realistic mock data or real AI-powered matching depending on your OpenAI configuration!
