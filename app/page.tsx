@@ -1,68 +1,10 @@
-"use client"
+interface HomePageProps {
+  searchParams: { success?: string; error?: string }
+}
 
-import { useState } from 'react'
-
-export default function Home() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    location: '',
-    position: '',
-    experience: '',
-    skills: '',
-    coverLetter: '',
-    resume: null as File | null
-  })
-
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    
-    try {
-      // Here you would typically send the data to your API endpoint
-      console.log('Application data:', formData)
-      alert('Application submitted successfully!')
-      
-      // Reset form
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        location: '',
-        position: '',
-        experience: '',
-        skills: '',
-        coverLetter: '',
-        resume: null
-      })
-    } catch (error) {
-      console.error('Error submitting application:', error)
-      alert('Failed to submit application. Please try again.')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFormData({
-        ...formData,
-        resume: e.target.files[0]
-      })
-    }
-  }
+export default function Home({ searchParams }: HomePageProps) {
+  const showSuccess = searchParams.success === 'true'
+  const showError = searchParams.error === 'true'
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -70,13 +12,39 @@ export default function Home() {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Job Application</h1>
         <p className="text-gray-600">Please fill out the form below to apply for a position.</p>
       </div>
+
+      {/* Success Message */}
+      {showSuccess && (
+        <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+          <div className="flex items-center">
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="font-medium">Application submitted successfully!</span>
+          </div>
+          <p className="mt-1 text-sm">Thank you for your application. We'll review it and get back to you soon.</p>
+        </div>
+      )}
+
+      {/* Error Message */}
+      {showError && (
+        <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          <div className="flex items-center">
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="font-medium">Failed to submit application</span>
+          </div>
+          <p className="mt-1 text-sm">Please try again or contact support if the problem persists.</p>
+        </div>
+      )}
       
       <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
         <div className="bg-blue-50 px-6 py-4 border-b">
           <h2 className="text-lg font-semibold text-blue-900">Personal Information</h2>
         </div>
         
-        <form onSubmit={handleSubmit} className="p-6">
+        <form action="/api/applications" method="POST" encType="multipart/form-data" className="p-6">
           {/* Personal Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
@@ -88,8 +56,6 @@ export default function Home() {
                 id="firstName"
                 name="firstName"
                 required
-                value={formData.firstName}
-                onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter your first name"
               />
@@ -104,8 +70,6 @@ export default function Home() {
                 id="lastName"
                 name="lastName"
                 required
-                value={formData.lastName}
-                onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter your last name"
               />
@@ -120,8 +84,6 @@ export default function Home() {
                 id="email"
                 name="email"
                 required
-                value={formData.email}
-                onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter your email address"
               />
@@ -135,8 +97,6 @@ export default function Home() {
                 type="tel"
                 id="phone"
                 name="phone"
-                value={formData.phone}
-                onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter your phone number"
               />
@@ -151,8 +111,6 @@ export default function Home() {
                 id="location"
                 name="location"
                 required
-                value={formData.location}
-                onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="City, State or Remote"
               />
@@ -167,8 +125,6 @@ export default function Home() {
                 id="position"
                 name="position"
                 required
-                value={formData.position}
-                onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="e.g. Frontend Developer"
               />
@@ -187,8 +143,6 @@ export default function Home() {
                 id="experience"
                 name="experience"
                 required
-                value={formData.experience}
-                onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Select experience level</option>
@@ -210,8 +164,6 @@ export default function Home() {
                 name="skills"
                 required
                 rows={3}
-                value={formData.skills}
-                onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="List your key skills, technologies, and expertise (e.g. React, Node.js, Python, etc.)"
               />
@@ -226,7 +178,6 @@ export default function Home() {
                 id="resume"
                 name="resume"
                 accept=".pdf,.doc,.docx"
-                onChange={handleFileChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -243,8 +194,6 @@ export default function Home() {
                 id="coverLetter"
                 name="coverLetter"
                 rows={6}
-                value={formData.coverLetter}
-                onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Tell us why you're interested in this position and what makes you a great fit..."
               />
@@ -254,38 +203,13 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t">
             <button
               type="submit"
-              disabled={isSubmitting}
-              className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
             >
-              {isSubmitting ? (
-                <>
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Submitting Application...
-                </>
-              ) : (
-                'Submit Application'
-              )}
+              Submit Application
             </button>
             <button
-              type="button"
+              type="reset"
               className="px-8 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
-              onClick={() => {
-                setFormData({
-                  firstName: '',
-                  lastName: '',
-                  email: '',
-                  phone: '',
-                  location: '',
-                  position: '',
-                  experience: '',
-                  skills: '',
-                  coverLetter: '',
-                  resume: null
-                })
-              }}
             >
               Clear Form
             </button>
