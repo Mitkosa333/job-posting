@@ -15,7 +15,6 @@ const customJestConfig = {
     '**/*.(test|spec).(ts|tsx|js)'
   ],
   testPathIgnorePatterns: [
-    '__tests__/disabled/',
     '__tests__/README.md'
   ],
   collectCoverageFrom: [
