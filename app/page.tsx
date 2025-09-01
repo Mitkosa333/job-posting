@@ -38,12 +38,12 @@ export default function Home({ searchParams }: HomePageProps) {
           <p className="mt-1 text-sm">Please try again or contact support if the problem persists.</p>
         </div>
       )}
-      
+
       <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
         <div className="bg-blue-50 px-6 py-4 border-b">
           <h2 className="text-lg font-semibold text-blue-900">Personal Information</h2>
         </div>
-        
+
         <form action="/api/applications" method="POST" encType="multipart/form-data" className="p-6">
           {/* Personal Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -104,22 +104,22 @@ export default function Home({ searchParams }: HomePageProps) {
           </div>
 
           <div className="mb-6">
-                          <div className="mb-8">
-                <label htmlFor="cv" className="block text-sm font-medium text-gray-700 mb-2">
-                  CV *
-                </label>
-                <input
-                  type="file"
-                  id="cv"
-                  name="cv"
-                  accept=".pdf,.doc,.docx"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                  Upload your CV (PDF, DOC, or DOCX format)
-                </p>
-              </div>
+            <div className="mb-8">
+              <label htmlFor="cv" className="block text-sm font-medium text-gray-700 mb-2">
+                CV *
+              </label>
+              <input
+                type="file"
+                id="cv"
+                name="cv"
+                accept=".pdf,.doc,.docx"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+              <p className="text-sm text-gray-500 mt-1">
+                Upload your CV (PDF format)
+              </p>
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t">
