@@ -77,6 +77,14 @@ export default function RecruiterDashboard() {
                     <span className="text-sm text-gray-500">{job.postedAt}</span>
                   </div>
                 </div>
+                <div className="ml-6 flex flex-col gap-2">
+                  <a
+                    href={`/jobs/${job.id}`}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-center"
+                  >
+                    View Details
+                  </a>
+                </div>
               </div>
             </div>
           ))}
