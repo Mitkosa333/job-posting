@@ -22,6 +22,10 @@ const JobSchema = new mongoose.Schema({
       max: 100,
     },
   }],
+  aiProcessed: {
+    type: Boolean,
+    default: false,
+  },
 }, {
   timestamps: true,
 })
@@ -31,5 +35,6 @@ JobSchema.index({ title: 'text', description: 'text' })
 JobSchema.index({ createdAt: -1 })
 JobSchema.index({ 'candidates.candidateId': 1 })
 JobSchema.index({ 'candidates.percentage': -1 })
+JobSchema.index({ aiProcessed: 1 })
 
 export default mongoose.models.Job || mongoose.model('Job', JobSchema)

@@ -41,14 +41,22 @@ if (jobs.length === 0 || candidates.length === 0) {
       });
     });
     
-    // Update the job with all candidates
+    // Update the job with all candidates and mark as AI processed
     db.jobs.updateOne(
       { _id: job._id },
-      { $set: { candidates: jobCandidates } }
+      { $set: { candidates: jobCandidates, aiProcessed: true } }
     );
     
     print(`✅ Added ${jobCandidates.length} candidates to job: "${job.title}"`);
   });
+  
+  // Mark all candidates as AI processed since they've been linked to jobs
+  db.candidates.updateMany(
+    {},
+    { $set: { aiProcessed: true } }
+  );
+  
+  print(`\n✅ Marked all ${candidates.length} candidates as AI processed`);
 }
 
 print("\n📊 Final Statistics:");

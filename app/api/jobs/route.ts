@@ -33,11 +33,23 @@ async function processJobAIMatchingAsync(jobId: ObjectId, jobDescription: string
 
         await db.collection('jobs').updateOne(
           { _id: jobId },
-          { $set: { candidates: candidatesArray } }
+          { 
+            $set: { 
+              candidates: candidatesArray,
+              aiProcessed: true
+            } 
+          }
         )
 
-        console.log(`Successfully updated job with ${candidateMatches.length} candidate matches`)
+        console.log(`Successfully updated job with ${candidateMatches.length} candidate matches and marked as AI processed`)
       }
+    } else {
+      // No candidates to match, but still mark as processed
+      await db.collection('jobs').updateOne(
+        { _id: jobId },
+        { $set: { aiProcessed: true } }
+      )
+      console.log(`Job marked as AI processed (no candidates to match)`)
     }
   } catch (error) {
     console.error('AI matching failed in background for job:', error)

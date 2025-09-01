@@ -40,7 +40,17 @@ async function processAIMatchingAsync(candidateId: ObjectId, resume: string, db:
       }
 
       console.log(`Successfully updated ${jobMatches.length} jobs with candidate matches`)
+    } else {
+      console.log(`No jobs found to match against candidate ${candidateId}`)
     }
+
+    // Mark the candidate as AI processed regardless of whether there were jobs to match
+    await db.collection('candidates').updateOne(
+      { _id: candidateId },
+      { $set: { aiProcessed: true } }
+    )
+    
+    console.log(`Candidate ${candidateId} marked as AI processed`)
   } catch (error) {
     console.error('AI matching failed in background:', error)
     // Log the error but don't throw - we don't want to crash the background process

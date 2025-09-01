@@ -14,13 +14,25 @@ export async function GET(request: NextRequest) {
     const client = await clientPromise
     const db = client.db('job-board')
 
-    // Check if the candidate has been processed by looking for jobs with this candidate
-    const jobsWithCandidate = await db.collection('jobs').find({
-      'candidates.candidateId': new ObjectId(candidateId)
-    }).toArray()
+    // Check if the candidate has been AI processed
+    const candidate = await db.collection('candidates').findOne({
+      _id: new ObjectId(candidateId)
+    })
 
-    const isProcessed = jobsWithCandidate.length > 0
-    const matchCount = jobsWithCandidate.length
+    if (!candidate) {
+      return NextResponse.json({ error: 'Candidate not found' }, { status: 404 })
+    }
+
+    const isProcessed = candidate.aiProcessed || false
+
+    let matchCount = 0
+    if (isProcessed) {
+      // If processed, count how many jobs the candidate matched with
+      const jobsWithCandidate = await db.collection('jobs').find({
+        'candidates.candidateId': new ObjectId(candidateId)
+      }).toArray()
+      matchCount = jobsWithCandidate.length
+    }
 
     return NextResponse.json({
       candidateId,

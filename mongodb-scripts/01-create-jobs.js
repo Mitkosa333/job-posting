@@ -34,6 +34,7 @@ What We Offer:
 • Collaborative and innovative work environment
 • Health and wellness programs`,
     candidates: [],
+    aiProcessed: false,
     createdAt: new Date('2024-01-15T10:00:00Z'),
     updatedAt: new Date('2024-01-15T10:00:00Z')
   },
@@ -68,6 +69,7 @@ Benefits:
 • Modern office environment
 • Team building activities`,
     candidates: [],
+    aiProcessed: false,
     createdAt: new Date('2024-01-10T14:30:00Z'),
     updatedAt: new Date('2024-01-10T14:30:00Z')
   },
@@ -103,6 +105,7 @@ What We Provide:
 • Supportive team environment
 • Recognition and reward programs`,
     candidates: [],
+    aiProcessed: false,
     createdAt: new Date('2024-01-08T09:15:00Z'),
     updatedAt: new Date('2024-01-08T09:15:00Z')
   },
@@ -137,6 +140,7 @@ Benefits:
 • Modern technology and tools
 • Collaborative work environment`,
     candidates: [],
+    aiProcessed: false,
     createdAt: new Date('2024-01-05T11:45:00Z'),
     updatedAt: new Date('2024-01-05T11:45:00Z')
   },
@@ -172,6 +176,7 @@ What We Offer:
 • Team building and social events
 • Cutting-edge project management tools`,
     candidates: [],
+    aiProcessed: false,
     createdAt: new Date('2024-01-03T16:20:00Z'),
     updatedAt: new Date('2024-01-03T16:20:00Z')
   },
@@ -206,6 +211,7 @@ Benefits:
 • Flexible schedule
 • Collaborative team culture`,
     candidates: [],
+    aiProcessed: false,
     createdAt: new Date('2024-01-01T13:10:00Z'),
     updatedAt: new Date('2024-01-01T13:10:00Z')
   }

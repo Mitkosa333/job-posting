@@ -35,6 +35,10 @@ const CandidateSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  aiProcessed: {
+    type: Boolean,
+    default: false,
+  },
 }, {
   timestamps: true,
 })
@@ -44,6 +48,7 @@ CandidateSchema.index({ email: 1 })
 CandidateSchema.index({ submittedAt: -1 })
 CandidateSchema.index({ firstName: 1, lastName: 1 })
 CandidateSchema.index({ createdAt: -1 })
+CandidateSchema.index({ aiProcessed: 1 })
 
 // Virtual for full name
 CandidateSchema.virtual('fullName').get(function() {

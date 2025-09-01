@@ -48,6 +48,10 @@ db.createCollection("jobs", {
             }
           }
         },
+        aiProcessed: {
+          bsonType: "bool",
+          description: "Whether OpenAI processing has been completed for this job"
+        },
         createdAt: {
           bsonType: "date",
           description: "Creation timestamp"
@@ -93,6 +97,10 @@ db.createCollection("candidates", {
           bsonType: "date",
           description: "Application submission timestamp"
         },
+        aiProcessed: {
+          bsonType: "bool",
+          description: "Whether OpenAI processing has been completed for this candidate"
+        },
         createdAt: {
           bsonType: "date",
           description: "Creation timestamp"
@@ -114,12 +122,14 @@ db.jobs.createIndex({ "title": "text", "description": "text" });
 db.jobs.createIndex({ "createdAt": -1 });
 db.jobs.createIndex({ "candidates.candidateId": 1 });
 db.jobs.createIndex({ "candidates.percentage": -1 });
+db.jobs.createIndex({ "aiProcessed": 1 });
 
 // Candidates collection indexes
 db.candidates.createIndex({ "email": 1 }, { unique: true });
 db.candidates.createIndex({ "submittedAt": -1 });
 db.candidates.createIndex({ "firstName": 1, "lastName": 1 });
 db.candidates.createIndex({ "createdAt": -1 });
+db.candidates.createIndex({ "aiProcessed": 1 });
 
 print("✅ Database setup completed!");
 print("📚 Collections created: jobs, candidates");
