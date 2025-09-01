@@ -11,7 +11,6 @@ export async function POST(request: NextRequest) {
       lastName: formData.get('lastName') as string,
       email: formData.get('email') as string,
       phone: formData.get('phone') as string,
-      experience: formData.get('experience') as string,
       cvFileName: '',
       submittedAt: new Date(),
     }
