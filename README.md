@@ -9,6 +9,7 @@ A modern job board application built with Next.js 14, TypeScript, and MongoDB.
 - ➕ **Job Posting**: Simple form for recruiters to post new job opportunities
 - 📋 **Job Details**: Detailed job view pages with application tracking
 - 🗄️ **MongoDB Integration**: Full database support for jobs, candidates, and applications
+- 🤖 **AI-Powered Matching**: Automatic candidate-job matching using OpenAI GPT-3.5 Turbo
 - 🎨 **Modern UI**: Built with Tailwind CSS for responsive design
 - 📱 **Responsive**: Mobile-friendly design throughout
 - 🔄 **Real-time Data**: Dynamic content with server-side rendering
@@ -18,8 +19,9 @@ A modern job board application built with Next.js 14, TypeScript, and MongoDB.
 - **Frontend**: Next.js 14 (App Router), React 18, TypeScript
 - **Styling**: Tailwind CSS
 - **Database**: MongoDB with both native driver and Mongoose ODM
+- **AI**: OpenAI GPT-3.5 Turbo for intelligent candidate matching
 - **API**: Next.js API Routes
-- **File Handling**: Multipart form data for CV uploads
+- **Resume Processing**: Text-based resume system with AI analysis
 
 ## Getting Started
 
@@ -48,7 +50,12 @@ A modern job board application built with Next.js 14, TypeScript, and MongoDB.
 
 4. Add your environment variables to `.env`:
    ```env
+   # Database Configuration
    MONGODB_URI=mongodb://localhost:27017/job-board
+   
+   # OpenAI Configuration (Required for automatic candidate matching)
+   # Get your API key from: https://platform.openai.com/api-keys
+   OPENAI_API_KEY=your_openai_api_key_here
    ```
 
 5. Set up mock data (optional but recommended):
