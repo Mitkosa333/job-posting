@@ -1,25 +1,15 @@
 import { NextResponse } from 'next/server'
-import clientPromise from '@/lib/mongodb'
+import dbConnect from '@/lib/mongoose'
+import Candidate from '@/models/Candidate'
 
 export async function GET() {
   try {
-    const client = await clientPromise
-    const db = client.db('job-board')
-    const candidates = await db.collection('candidates').find({}).toArray()
+    await dbConnect()
+    const candidates = await Candidate.find({})
+      .sort({ submittedAt: -1 })
+      .lean()
 
-    const formattedCandidates = candidates.map(candidate => ({
-      _id: candidate._id.toString(),
-      firstName: candidate.firstName,
-      lastName: candidate.lastName,
-      email: candidate.email,
-      phone: candidate.phone,
-      resume: candidate.resume,
-      submittedAt: candidate.submittedAt,
-      createdAt: candidate.createdAt,
-      updatedAt: candidate.updatedAt
-    }))
-
-    return NextResponse.json(formattedCandidates)
+    return NextResponse.json(candidates)
   } catch (error) {
     console.error('Database error:', error)
     return NextResponse.json({ error: 'Failed to fetch candidates' }, { status: 500 })

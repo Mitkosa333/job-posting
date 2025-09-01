@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import clientPromise from '@/lib/mongodb'
-import { ObjectId } from 'mongodb'
+import dbConnect from '@/lib/mongoose'
+import Candidate from '@/models/Candidate'
+import { Types } from 'mongoose'
 
 interface RouteParams {
   params: { id: string }
@@ -8,33 +9,20 @@ interface RouteParams {
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    const client = await clientPromise
-    const db = client.db('job-board')
+    await dbConnect()
     
     // Validate ObjectId format
-    if (!ObjectId.isValid(params.id)) {
+    if (!Types.ObjectId.isValid(params.id)) {
       return NextResponse.json({ error: 'Invalid candidate ID' }, { status: 400 })
     }
     
-    const candidate = await db.collection('candidates').findOne({ _id: new ObjectId(params.id) })
+    const candidate = await Candidate.findById(params.id).lean()
 
     if (!candidate) {
       return NextResponse.json({ error: 'Candidate not found' }, { status: 404 })
     }
 
-    const formattedCandidate = {
-      _id: candidate._id.toString(),
-      firstName: candidate.firstName,
-      lastName: candidate.lastName,
-      email: candidate.email,
-      phone: candidate.phone,
-      resume: candidate.resume,
-      submittedAt: candidate.submittedAt,
-      createdAt: candidate.createdAt,
-      updatedAt: candidate.updatedAt
-    }
-
-    return NextResponse.json(formattedCandidate)
+    return NextResponse.json(candidate)
   } catch (error) {
     console.error('Database error:', error)
     return NextResponse.json({ error: 'Failed to fetch candidate' }, { status: 500 })

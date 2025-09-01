@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import clientPromise from '@/lib/mongodb'
-import { ObjectId } from 'mongodb'
+import dbConnect from '@/lib/mongoose'
+import Candidate from '@/models/Candidate'
+import Job from '@/models/Job'
+import { Types } from 'mongoose'
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,13 +13,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Candidate ID is required' }, { status: 400 })
     }
 
-    const client = await clientPromise
-    const db = client.db('job-board')
+    if (!Types.ObjectId.isValid(candidateId)) {
+      return NextResponse.json({ error: 'Invalid candidate ID' }, { status: 400 })
+    }
+
+    await dbConnect()
 
     // Check if the candidate has been AI processed
-    const candidate = await db.collection('candidates').findOne({
-      _id: new ObjectId(candidateId)
-    })
+    const candidate = await Candidate.findById(candidateId).lean()
 
     if (!candidate) {
       return NextResponse.json({ error: 'Candidate not found' }, { status: 404 })
@@ -28,9 +31,9 @@ export async function GET(request: NextRequest) {
     let matchCount = 0
     if (isProcessed) {
       // If processed, count how many jobs the candidate matched with
-      const jobsWithCandidate = await db.collection('jobs').find({
-        'candidates.candidateId': new ObjectId(candidateId)
-      }).toArray()
+      const jobsWithCandidate = await Job.find({
+        'candidates.candidateId': new Types.ObjectId(candidateId)
+      }).lean()
       matchCount = jobsWithCandidate.length
     }
 

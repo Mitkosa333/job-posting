@@ -19,7 +19,7 @@ A modern job board application built with Next.js 14, TypeScript, and MongoDB.
 
 - **Frontend**: Next.js 14 (App Router), React 18, TypeScript
 - **Styling**: Tailwind CSS
-- **Database**: MongoDB with both native driver and Mongoose ODM
+- **Database**: MongoDB with Mongoose ODM for schema validation and type safety
 - **AI**: OpenAI GPT-3.5 Turbo for intelligent candidate matching
 - **API**: Next.js API Routes
 - **Resume Processing**: Text-based resume system with AI analysis
@@ -158,8 +158,7 @@ job-board/
 ├── components/            # Reusable React components
 │   └── ProcessingStatus.tsx # AI processing status component
 ├── lib/                   # Utility libraries
-│   ├── mongodb.ts        # MongoDB connection (native driver)
-│   ├── mongoose.ts       # Mongoose connection
+│   ├── mongoose.ts       # Mongoose connection and database setup
 │   └── openai.ts         # OpenAI integration
 ├── models/                # Database models
 │   ├── Job.ts            # Job Mongoose schema
@@ -290,10 +289,10 @@ See `mongodb-scripts/README.md` for detailed setup instructions.
 - Back navigation to dashboard
 
 ### Database Integration
-- MongoDB native driver for basic operations
-- Mongoose ODM for schema validation
-- Proper indexing for performance
-- Data relationship management
+- Mongoose ODM for schema validation and type safety
+- Automatic model validation with TypeScript integration
+- Proper indexing for performance optimization
+- Clean data relationship management with population
 
 ## Testing
 
@@ -414,7 +413,7 @@ docker exec -it job-board-app-dev sh
 
 The application uses:
 - **Server-side rendering** with Next.js App Router for better SEO and performance
-- **MongoDB** for data persistence with both native driver and Mongoose
+- **MongoDB with Mongoose** for data persistence with schema validation and type safety
 - **OpenAI GPT-3.5 Turbo** for intelligent candidate-job matching
 - **TypeScript** for type safety throughout the application
 - **Tailwind CSS** for consistent, responsive styling
