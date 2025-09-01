@@ -25,12 +25,61 @@ A modern job board application built with Next.js 14, TypeScript, and MongoDB.
 
 ## Getting Started
 
-### Prerequisites
+You can run this application in two ways: using Docker (recommended) or local development setup.
 
+### Option 1: Docker Setup (Recommended)
+
+#### Prerequisites
+- Docker and Docker Compose installed
+
+#### Quick Start with Docker
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd job-board
+   ```
+
+2. Create environment file:
+   ```bash
+   touch .env
+   ```
+
+3. Add your OpenAI API key to `.env`:
+   ```env
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
+
+4. Run with Docker Compose:
+   ```bash
+   # For production build
+   docker-compose up -d
+
+   # For development with hot reload
+   docker-compose -f docker-compose.dev.yml up -d
+   ```
+
+5. Access the application:
+   - **Application**: http://localhost:3000
+   - **Database UI**: http://localhost:8081 (Mongo Express)
+   - **MongoDB**: localhost:27018 (to avoid conflicts with local MongoDB)
+
+6. Initialize with mock data:
+   ```bash
+   # Access MongoDB container
+   docker exec -it job-board-mongodb-dev mongosh -u admin -p password123 --authenticationDatabase admin
+
+   # Or run the initialization scripts directly
+   docker exec -it job-board-mongodb-dev mongosh job-board --eval "load('/docker-entrypoint-initdb.d/00-setup-database.js')"
+   ```
+
+### Option 2: Local Development Setup
+
+#### Prerequisites
 - Node.js 18+ 
 - MongoDB (local or cloud instance)
 
-### Installation
+#### Installation
 
 1. Clone the repository:
    ```bash
@@ -211,6 +260,34 @@ See `mongodb-scripts/README.md` for detailed setup instructions.
 
 ## Development
 
+### Docker Commands
+
+```bash
+# Start development environment
+docker-compose -f docker-compose.dev.yml up -d
+
+# Start production environment
+docker-compose up -d
+
+# Stop all services
+docker-compose down
+
+# View logs
+docker-compose logs -f app
+docker-compose logs -f mongodb
+
+# Rebuild application
+docker-compose build app
+
+# Access MongoDB shell
+docker exec -it job-board-mongodb-dev mongosh -u admin -p password123 --authenticationDatabase admin
+
+# Access application container
+docker exec -it job-board-app-dev sh
+```
+
+### Local Development
+
 The application uses:
 - **Server-side rendering** with Next.js App Router for better SEO and performance
 - **MongoDB** for data persistence with both native driver and Mongoose
@@ -219,6 +296,18 @@ The application uses:
 - **Tailwind CSS** for consistent, responsive styling
 - **Form handling** with both client-side and server-side approaches
 - **Text-based resume system** with AI analysis
+
+### Troubleshooting
+
+#### Docker Issues
+- **Port conflicts**: Change ports in `docker-compose.yml` if 3000, 8081, or 27017 are in use
+- **Permission issues**: Ensure Docker has proper permissions on your system
+- **Build failures**: Try `docker-compose build --no-cache` for clean rebuild
+
+#### Database Issues
+- **Connection errors**: Verify MongoDB container is running with `docker-compose ps`
+- **Data persistence**: Database data is stored in Docker volumes and persists between restarts
+- **Reset data**: Remove volumes with `docker-compose down -v` (⚠️ This deletes all data)
 
 ## Contributing
 
