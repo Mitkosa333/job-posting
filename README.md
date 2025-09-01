@@ -128,31 +128,45 @@ You can run this application in two ways: using Docker (recommended) or local de
 
 ```
 job-board/
-├── app/                       # Next.js App Router pages
+├── app/                       # Next.js 14 App Router
 │   ├── api/                  # API routes
 │   │   ├── applications/     # Application submission endpoint
-│   │   └── jobs/            # Job CRUD endpoints
-│   ├── jobs/                # Dynamic job detail pages
+│   │   ├── candidates/       # Candidate CRUD endpoints
+│   │   │   └── [id]/        # Individual candidate API
+│   │   ├── jobs/            # Job CRUD endpoints
+│   │   └── processing-status/ # AI processing status API
+│   ├── candidates/           # Candidate pages
+│   │   └── [id]/            # Individual candidate view
+│   ├── jobs/                # Job detail pages
 │   │   └── [id]/           # Individual job view
 │   ├── recruiter/           # Recruiter section
-│   │   ├── post-job/       # Job posting form
-│   │   └── page.tsx        # Recruiter dashboard
+│   │   ├── layout.tsx      # Recruiter navigation layout
+│   │   ├── page.tsx        # Recruiter dashboard
+│   │   └── post-job/       # Job posting form
 │   ├── globals.css         # Global styles
 │   ├── layout.tsx          # Root layout with navigation
 │   └── page.tsx            # Homepage application form
+├── components/              # Reusable React components
+│   └── ProcessingStatus.tsx # AI processing status component
 ├── lib/                     # Utility libraries
 │   ├── mongodb.ts          # MongoDB connection (native driver)
-│   └── mongoose.ts         # Mongoose connection
+│   ├── mongoose.ts         # Mongoose connection
+│   └── openai.ts           # OpenAI integration
 ├── models/                  # Database models
-│   ├── Job.ts              # Job model schema
-│   └── Candidate.ts        # Candidate model schema
-├── mongodb-scripts/         # Mock data generation scripts
-│   ├── 00-setup-database.js
-│   ├── 01-create-jobs.js
-│   ├── 02-create-candidates.js
-│   ├── 03-link-candidates-to-jobs.js
-│   ├── 04-cleanup-data.js
-│   └── README.md
+│   ├── Job.ts              # Job Mongoose schema
+│   └── Candidate.ts        # Candidate Mongoose schema
+├── mongodb-scripts/         # Database setup and mock data
+│   ├── 00-setup-database.js # Schema creation and indexes
+│   ├── 01-create-jobs.js    # Sample job postings
+│   ├── 02-create-candidates.js # Sample candidates
+│   ├── 03-link-candidates-to-jobs.js # AI percentage linking
+│   ├── 04-cleanup-data.js   # Data cleanup utilities
+│   └── README.md           # Database setup instructions
+├── scripts/                 # Utility scripts
+│   └── docker-setup.sh     # Docker environment setup
+├── docker-compose.yml      # Production Docker setup
+├── docker-compose.dev.yml  # Development Docker setup
+├── Dockerfile              # Container definition
 ├── next.config.js          # Next.js configuration
 ├── tailwind.config.ts      # Tailwind CSS configuration
 └── tsconfig.json           # TypeScript configuration
@@ -161,19 +175,29 @@ job-board/
 ## Application Flow
 
 ### For Job Seekers
-1. **Homepage** (`/`) - Fill out application form with personal info and CV upload
-2. **Job Details** (`/jobs/[id]`) - View detailed job descriptions and requirements
+1. **Homepage** (`/`) - Fill out application form with personal info and resume text
+2. **Job Details** (`/jobs/[id]`) - View detailed job descriptions
+3. **AI Processing** - Automatic matching against all jobs with percentage scores
 
 ### For Recruiters
-1. **Dashboard** (`/recruiter`) - View all job postings with application counts
-2. **Post Jobs** (`/recruiter/post-job`) - Create new job postings
-3. **Job Management** - View applications and candidate details
+1. **Dashboard** (`/recruiter`) - View all job postings with qualified candidates
+2. **Post Jobs** (`/recruiter/post-job`) - Create new job postings (auto-matched with AI)
+3. **Candidate Details** (`/candidates/[id]`) - View individual candidate profiles
+4. **AI Matching** - See percentage-based candidate rankings for each job
 
 ## API Endpoints
 
-- `GET /api/jobs` - Fetch all jobs with application counts
-- `POST /api/jobs` - Create a new job posting
-- `POST /api/applications` - Submit job application with CV upload
+### Jobs
+- `GET /api/jobs` - Fetch all jobs with candidate match data
+- `POST /api/jobs` - Create a new job posting (triggers AI matching)
+
+### Candidates
+- `GET /api/candidates` - Fetch all candidates
+- `GET /api/candidates/[id]` - Fetch individual candidate details
+- `POST /api/applications` - Submit job application (triggers AI matching)
+
+### Processing Status
+- `GET /api/processing-status?candidateId=[id]` - Check AI processing status for a candidate
 
 ## Database Schema
 
@@ -184,8 +208,9 @@ job-board/
   description: string        // Required - detailed job description
   candidates: [{             // Array of applicants
     candidateId: ObjectId,   // Reference to Candidate document
-    percentage?: number      // Match percentage (0-100)
+    percentage: number       // AI-calculated match percentage (0-100)
   }],
+  aiProcessed: boolean       // Whether AI analysis has been completed
   createdAt: Date           // Auto-generated
   updatedAt: Date           // Auto-generated
 }
@@ -199,6 +224,7 @@ job-board/
   email: string            // Required, unique
   phone?: string           // Optional
   resume: string           // Required - resume text content
+  aiProcessed: boolean      // Whether AI analysis has been completed
   submittedAt: Date        // Application submission time
   createdAt: Date         // Auto-generated
   updatedAt: Date         // Auto-generated
