@@ -101,103 +101,25 @@ export default function Home({ searchParams }: HomePageProps) {
                 placeholder="Enter your phone number"
               />
             </div>
-
-            <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-                Location *
-              </label>
-              <input
-                type="text"
-                id="location"
-                name="location"
-                required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="City, State or Remote"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="position" className="block text-sm font-medium text-gray-700 mb-2">
-                Desired Position *
-              </label>
-              <input
-                type="text"
-                id="position"
-                name="position"
-                required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="e.g. Frontend Developer"
-              />
-            </div>
           </div>
 
-          {/* Professional Information */}
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Professional Information</h3>
-            
-            <div className="mb-6">
-              <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-2">
-                Years of Experience *
-              </label>
-              <select
-                id="experience"
-                name="experience"
-                required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Select experience level</option>
-                <option value="0-1">0-1 years (Entry Level)</option>
-                <option value="2-3">2-3 years</option>
-                <option value="4-5">4-5 years</option>
-                <option value="6-8">6-8 years</option>
-                <option value="9-12">9-12 years</option>
-                <option value="13+">13+ years (Senior Level)</option>
-              </select>
-            </div>
-
-            <div className="mb-6">
-              <label htmlFor="skills" className="block text-sm font-medium text-gray-700 mb-2">
-                Key Skills *
-              </label>
-              <textarea
-                id="skills"
-                name="skills"
-                required
-                rows={3}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="List your key skills, technologies, and expertise (e.g. React, Node.js, Python, etc.)"
-              />
-            </div>
-
-            <div className="mb-6">
-              <label htmlFor="resume" className="block text-sm font-medium text-gray-700 mb-2">
-                Resume *
-              </label>
-              <input
-                type="file"
-                id="resume"
-                name="resume"
-                accept=".pdf,.doc,.docx"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-              <p className="text-sm text-gray-500 mt-1">
-                Upload your resume (PDF, DOC, or DOCX format)
-              </p>
-            </div>
-
-            <div className="mb-8">
-              <label htmlFor="coverLetter" className="block text-sm font-medium text-gray-700 mb-2">
-                Cover Letter
-              </label>
-              <textarea
-                id="coverLetter"
-                name="coverLetter"
-                rows={6}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Tell us why you're interested in this position and what makes you a great fit..."
-              />
-            </div>
+                          <div className="mb-8">
+                <label htmlFor="cv" className="block text-sm font-medium text-gray-700 mb-2">
+                  CV *
+                </label>
+                <input
+                  type="file"
+                  id="cv"
+                  name="cv"
+                  accept=".pdf,.doc,.docx"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  Upload your CV (PDF, DOC, or DOCX format)
+                </p>
+              </div>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t">

@@ -11,19 +11,15 @@ export async function POST(request: NextRequest) {
       lastName: formData.get('lastName') as string,
       email: formData.get('email') as string,
       phone: formData.get('phone') as string,
-      location: formData.get('location') as string,
-      position: formData.get('position') as string,
       experience: formData.get('experience') as string,
-      skills: formData.get('skills') as string,
-      coverLetter: formData.get('coverLetter') as string,
-      resumeFileName: '',
+      cvFileName: '',
       submittedAt: new Date(),
     }
 
-    // Handle resume file
-    const resumeFile = formData.get('resume') as File
-    if (resumeFile && resumeFile.size > 0) {
-      application.resumeFileName = resumeFile.name
+    // Handle CV file
+    const cvFile = formData.get('cv') as File
+    if (cvFile && cvFile.size > 0) {
+      application.cvFileName = cvFile.name
       // In a real application, you would save the file to cloud storage
       // For now, we just store the filename
     }
