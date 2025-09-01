@@ -12,7 +12,7 @@ interface Candidate {
   lastName: string
   email: string
   phone?: string
-  cvFileName: string
+  resume: string
   submittedAt: string
   createdAt: string
   updatedAt: string
@@ -161,9 +161,11 @@ export default function CandidateDetailPage({ params }: CandidateDetailPageProps
             </div>
           )}
           
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">CV/Resume</label>
-            <div className="text-gray-900">{candidate.cvFileName}</div>
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Resume</label>
+            <div className="text-gray-900 bg-gray-50 p-4 rounded-lg whitespace-pre-line">
+              {candidate.resume}
+            </div>
           </div>
           
           <div>

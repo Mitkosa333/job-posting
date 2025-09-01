@@ -19,7 +19,7 @@ interface Candidate {
   lastName: string
   email: string
   phone?: string
-  cvFileName: string
+  resume: string
 }
 
 export default function RecruiterDashboard() {
@@ -51,7 +51,7 @@ export default function RecruiterDashboard() {
           lastName: candidate.lastName,
           email: candidate.email,
           phone: candidate.phone,
-          cvFileName: candidate.cvFileName
+          resume: candidate.resume
         })))
         
         console.log('Fetched candidates:', candidatesData.length)

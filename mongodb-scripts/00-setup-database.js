@@ -66,7 +66,7 @@ db.createCollection("candidates", {
     $jsonSchema: {
       bsonType: "object",
       title: "Candidate Schema",
-      required: ["firstName", "lastName", "email", "cvFileName"],
+      required: ["firstName", "lastName", "email", "resume"],
       properties: {
         firstName: {
           bsonType: "string",
@@ -85,9 +85,9 @@ db.createCollection("candidates", {
           bsonType: "string",
           description: "Phone number (optional)"
         },
-        cvFileName: {
+        resume: {
           bsonType: "string",
-          description: "CV filename is required"
+          description: "Resume text is required"
         },
         submittedAt: {
           bsonType: "date",

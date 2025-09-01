@@ -27,7 +27,7 @@ const CandidateSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
-  cvFileName: {
+  resume: {
     type: String,
     required: true,
   },

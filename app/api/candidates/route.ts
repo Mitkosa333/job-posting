@@ -13,7 +13,7 @@ export async function GET() {
       lastName: candidate.lastName,
       email: candidate.email,
       phone: candidate.phone,
-      cvFileName: candidate.cvFileName,
+      resume: candidate.resume,
       submittedAt: candidate.submittedAt,
       createdAt: candidate.createdAt,
       updatedAt: candidate.updatedAt

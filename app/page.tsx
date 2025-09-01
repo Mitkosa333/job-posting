@@ -44,7 +44,7 @@ export default function Home({ searchParams }: HomePageProps) {
           <h2 className="text-lg font-semibold text-blue-900">Personal Information</h2>
         </div>
 
-        <form action="/api/applications" method="POST" encType="multipart/form-data" className="p-6">
+                        <form action="/api/applications" method="POST" className="p-6">
           {/* Personal Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
@@ -103,24 +103,24 @@ export default function Home({ searchParams }: HomePageProps) {
             </div>
           </div>
 
-          <div className="mb-6">
-            <div className="mb-8">
-              <label htmlFor="cv" className="block text-sm font-medium text-gray-700 mb-2">
-                CV *
-              </label>
-              <input
-                type="file"
-                id="cv"
-                name="cv"
-                accept=".pdf,.doc,.docx"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-              <p className="text-sm text-gray-500 mt-1">
-                Upload your CV (PDF format)
-              </p>
-            </div>
-          </div>
+                            <div className="mb-6">
+                    <div className="mb-8">
+                      <label htmlFor="resume" className="block text-sm font-medium text-gray-700 mb-2">
+                        Resume *
+                      </label>
+                      <textarea
+                        id="resume"
+                        name="resume"
+                        rows={8}
+                        required
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Please provide your work experience, education, skills, and any other relevant information..."
+                      />
+                      <p className="text-sm text-gray-500 mt-1">
+                        Enter your resume details including work experience, education, and skills
+                      </p>
+                    </div>
+                  </div>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t">
             <button
