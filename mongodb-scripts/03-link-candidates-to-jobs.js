@@ -18,11 +18,26 @@ if (jobs.length === 0 || candidates.length === 0) {
   jobs.forEach((job, jobIndex) => {
     const jobCandidates = [];
     
-    // Add every candidate to this job
+    // Add every candidate to this job with varying percentage scores
     candidates.forEach(candidate => {
+      let percentage;
+      
+      // Generate percentage with realistic distribution:
+      // 70% of candidates score below 50%
+      // 30% of candidates score 50% or above
+      const randomValue = Math.random();
+      
+      if (randomValue < 0.7) {
+        // 70% chance: Score between 15-49%
+        percentage = Math.floor(Math.random() * 35) + 15;
+      } else {
+        // 30% chance: Score between 50-95%
+        percentage = Math.floor(Math.random() * 46) + 50;
+      }
+      
       jobCandidates.push({
         candidateId: candidate._id,
-        percentage: Math.floor(Math.random() * 41) + 60 // Random percentage between 60-100
+        percentage: percentage
       });
     });
     

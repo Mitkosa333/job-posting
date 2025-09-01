@@ -70,14 +70,16 @@ done
   - First and last names
   - Email addresses
   - Phone numbers
-  - CV filenames
+  - Professional resume text (experience, skills, education)
   - Application timestamps
 
 ### Job-Candidate Relationships
 - Each job gets **ALL 10 candidates**
 - Each candidate is linked to **ALL 6 jobs**
-- Each job-candidate pair gets a **random percentage score (60-100%)**
-- Complete application matrix for comprehensive testing
+- **Realistic percentage distribution:**
+  - 70% of candidates score 15-49% (below qualification threshold)
+  - 30% of candidates score 50-95% (qualified candidates)
+- Complete application matrix with realistic filtering
 
 ## Database Schema
 
@@ -104,7 +106,7 @@ done
   lastName: String (required),
   email: String (required, unique),
   phone: String,
-  cvFileName: String (required),
+  resume: String (required), // Professional resume text
   submittedAt: Date,
   createdAt: Date,
   updatedAt: Date
@@ -136,8 +138,9 @@ After running all scripts, you should see:
 👥 Total Candidates: 10
 📋 Total Applications: 60 (every candidate linked to every job)
 📈 Average Applications per Job: 10.0
+📈 Average Qualified Candidates per Job: ~3.0 (30% above 50%)
 📭 Jobs without Applications: 0
-🏆 Most Popular Job: All jobs have equal applications (10 each)
+🏆 Percentage Distribution: 70% below 50%, 30% above 50%
 ```
 
 ## Cleanup
@@ -153,6 +156,27 @@ db.metadata.drop();
 ```
 
 Or simply re-run `00-setup-database.js` which includes cleanup.
+
+## Application Features
+
+The mock data supports testing of:
+
+### Resume System
+- **Text-based resumes** instead of file uploads
+- **Professional content** for each candidate with realistic experience
+- **Searchable content** - resumes are stored as text in the database
+- **Easy display** - full resume text shown in candidate detail pages
+
+### Candidate Filtering
+- **Qualification threshold** at 50% match score
+- **Realistic distribution** - most candidates don't qualify
+- **Dynamic displays** - only qualified candidates shown in job listings
+- **Expand/collapse** functionality for viewing all qualified candidates
+
+### Data Relationships
+- **Complete matrix** - every candidate applies to every job
+- **Varying match scores** - realistic percentage distributions
+- **Professional profiles** - diverse backgrounds and experience levels
 
 ## Environment Variables
 
@@ -184,9 +208,10 @@ MONGODB_URI=mongodb://localhost:27017/job-board
 After creating mock data:
 
 1. Start your Next.js application: `npm run dev`
-2. Visit `/recruiter` to see job listings
-3. Visit `/jobs/[id]` to see job details
-4. Submit applications via the homepage form
-5. Check MongoDB to see real data integration
+2. Visit `/recruiter` to see job listings with qualified candidates
+3. Visit `/jobs/[id]` to see individual job details
+4. Click on candidates to view their detailed profiles and resume text
+5. Submit new applications via the homepage form (text-based resume)
+6. Test the expand/collapse functionality for candidate lists
 
-The application will now display your mock data instead of showing empty states!
+The application will now display realistic candidate data with professional resumes and proper filtering!
