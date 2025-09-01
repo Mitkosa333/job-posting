@@ -13,7 +13,7 @@ export default function RecruiterPostJobPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    
+
     try {
       // Here you would typically send the data to your API endpoint
       // which would then save to MongoDB
@@ -24,7 +24,7 @@ export default function RecruiterPostJobPage() {
         },
         body: JSON.stringify(formData),
       })
-      
+
       if (response.ok) {
         alert('Job posted successfully!')
         // Reset form or redirect to dashboard
@@ -56,12 +56,12 @@ export default function RecruiterPostJobPage() {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Post a New Job</h1>
         <p className="text-gray-600">Fill out the form below to create your job posting. All fields marked with * are required.</p>
       </div>
-      
+
       <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
         <div className="bg-blue-50 px-6 py-4 border-b">
           <h2 className="text-lg font-semibold text-blue-900">Job Details</h2>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
@@ -79,10 +79,6 @@ export default function RecruiterPostJobPage() {
                 placeholder="e.g. Marketing Manager"
               />
             </div>
-
-
-
-
           </div>
 
           <div className="mb-6">
