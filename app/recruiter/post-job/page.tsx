@@ -5,12 +5,7 @@ import { useState } from 'react'
 export default function RecruiterPostJobPage() {
   const [formData, setFormData] = useState({
     title: '',
-    location: '',
-    type: 'full-time',
-    salary: '',
-    description: '',
-    requirements: '',
-    contactEmail: ''
+    description: ''
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -35,12 +30,7 @@ export default function RecruiterPostJobPage() {
         // Reset form or redirect to dashboard
         setFormData({
           title: '',
-          location: '',
-          type: 'full-time',
-          salary: '',
-          description: '',
-          requirements: '',
-          contactEmail: ''
+          description: ''
         })
       } else {
         alert('Failed to post job. Please try again.')
@@ -86,77 +76,13 @@ export default function RecruiterPostJobPage() {
                 value={formData.title}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="e.g. Senior Frontend Developer"
+                placeholder="e.g. Marketing Manager"
               />
             </div>
 
 
 
-            <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-                Location *
-              </label>
-              <input
-                type="text"
-                id="location"
-                name="location"
-                required
-                value={formData.location}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="e.g. San Francisco, CA or Remote"
-              />
-            </div>
 
-            <div>
-              <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-2">
-                Job Type *
-              </label>
-              <select
-                id="type"
-                name="type"
-                required
-                value={formData.type}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="full-time">Full-time</option>
-                <option value="part-time">Part-time</option>
-                <option value="contract">Contract</option>
-                <option value="internship">Internship</option>
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="salary" className="block text-sm font-medium text-gray-700 mb-2">
-                Salary Range
-              </label>
-              <input
-                type="text"
-                id="salary"
-                name="salary"
-                value={formData.salary}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="e.g. $80k - $120k"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="contactEmail" className="block text-sm font-medium text-gray-700 mb-2">
-                Contact Email *
-              </label>
-              <input
-                type="email"
-                id="contactEmail"
-                name="contactEmail"
-                required
-                value={formData.contactEmail}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="e.g. hiring@company.com"
-              />
-            </div>
           </div>
 
           <div className="mb-6">
@@ -175,23 +101,7 @@ export default function RecruiterPostJobPage() {
             />
           </div>
 
-          <div className="mb-8">
-            <label htmlFor="requirements" className="block text-sm font-medium text-gray-700 mb-2">
-              Requirements & Qualifications
-            </label>
-            <textarea
-              id="requirements"
-              name="requirements"
-              rows={5}
-              value={formData.requirements}
-              onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="List the skills, experience, and qualifications required..."
-            />
-            <p className="text-sm text-gray-500 mt-2">
-              Tip: Be specific about must-have vs. nice-to-have requirements
-            </p>
-          </div>
+
 
           <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t">
             <button
@@ -210,12 +120,6 @@ export default function RecruiterPostJobPage() {
               ) : (
                 'Post Job'
               )}
-            </button>
-            <button
-              type="button"
-              className="px-8 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
-            >
-              Save Draft
             </button>
             <a
               href="/recruiter"

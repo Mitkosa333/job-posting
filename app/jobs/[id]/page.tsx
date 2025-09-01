@@ -12,9 +12,6 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
     1: {
       id: 1,
       title: "Senior Frontend Developer",
-      location: "San Francisco, CA",
-      type: "Full-time",
-      salary: "$120k - $160k",
       shortDescription: "We're looking for a senior frontend developer to join our team...",
       fullDescription: `We are seeking a highly skilled Senior Frontend Developer to join our dynamic development team. In this role, you will be responsible for creating exceptional user experiences using modern web technologies.
 
@@ -51,21 +48,11 @@ We are a fast-growing tech startup that is revolutionizing the way people intera
 
 How to Apply:
 Submit your application through our job board with your CV attached. We review applications on a rolling basis and aim to respond within 5 business days.`,
-      requirements: `• Bachelor's degree in Computer Science, Engineering, or related field
-• 5+ years of professional frontend development experience
-• Strong portfolio demonstrating complex React applications
-• Experience leading technical projects and mentoring team members
-• Excellent communication and collaboration skills
-• Ability to work in a fast-paced, agile environment`,
-      postedAt: "2 days ago",
-      contactEmail: "hiring@techcorp.com"
+      postedAt: "2 days ago"
     },
     2: {
       id: 2,
       title: "Backend Engineer",
-      location: "Remote",
-      type: "Full-time",
-      salary: "$100k - $140k",
       shortDescription: "Join our backend team and help build scalable systems...",
       fullDescription: `We are looking for a talented Backend Engineer to join our growing engineering team. You will be responsible for designing, developing, and maintaining robust backend systems that power our applications.
 
@@ -109,21 +96,11 @@ Growth Opportunities:
 
 Application Process:
 Please submit your CV along with any relevant project links or portfolio. We value practical experience and problem-solving skills over formal credentials.`,
-      requirements: `• 3+ years of backend development experience
-• Strong problem-solving and analytical skills
-• Experience with version control systems (Git)
-• Understanding of software development lifecycle
-• Ability to work independently in a remote environment
-• Strong communication skills for distributed team collaboration`,
-      postedAt: "1 week ago",
-      contactEmail: "careers@startupinc.com"
+      postedAt: "1 week ago"
     },
     3: {
       id: 3,
       title: "Full Stack Developer",
-      location: "New York, NY",
-      type: "Contract",
-      salary: "$80k - $120k",
       shortDescription: "Work on exciting client projects with modern technologies...",
       fullDescription: `We are seeking a versatile Full Stack Developer to work on diverse client projects for our digital agency. This contract position offers the opportunity to work with cutting-edge technologies and deliver innovative solutions for our clients.
 
@@ -173,14 +150,7 @@ Ideal Candidate:
 
 Agency Culture:
 We are a creative digital agency that values innovation, quality, and client satisfaction. Our team of 25 professionals works on projects ranging from startup MVPs to enterprise-level applications. We believe in work-life balance and maintaining a collaborative, supportive environment.`,
-      requirements: `• 4+ years of full stack development experience
-• Portfolio demonstrating diverse web development projects
-• Experience with both frontend and backend technologies
-• Client-facing communication experience preferred
-• Ability to work on multiple projects simultaneously
-• NYC-based or willing to work hybrid schedule`,
-      postedAt: "3 days ago",
-      contactEmail: "projects@digitalagency.com"
+      postedAt: "3 days ago"
     }
   }
 
@@ -223,27 +193,7 @@ We are a creative digital agency that values innovation, quality, and client sat
         <div className="flex justify-between items-start mb-6">
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-gray-900 mb-4">{job.title}</h1>
-            <div className="flex items-center gap-6 text-gray-600 mb-4">
-              <div className="flex items-center">
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <span>{job.location}</span>
-              </div>
-              <div className="flex items-center">
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">{job.type}</span>
-              </div>
-              <div className="flex items-center">
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                </svg>
-                <span className="text-lg font-semibold text-green-600">{job.salary}</span>
-              </div>
-            </div>
+
             <div className="text-sm text-gray-500">
               Posted {job.postedAt}
             </div>
@@ -256,13 +206,8 @@ We are a creative digital agency that values innovation, quality, and client sat
       <div className="bg-white rounded-lg shadow-sm border p-8">
         <div className="prose max-w-none">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Job Description</h2>
-          <div className="text-gray-700 whitespace-pre-line leading-relaxed mb-8">
-            {job.fullDescription}
-          </div>
-
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Requirements</h2>
           <div className="text-gray-700 whitespace-pre-line leading-relaxed">
-            {job.requirements}
+            {job.fullDescription}
           </div>
         </div>
       </div>
