@@ -13,12 +13,12 @@ interface Job {
 
 export default async function RecruiterDashboard() {
   let jobs: Job[] = []
-  
+
   try {
     const client = await clientPromise
     const db = client.db('job-board')
     const jobsData = await db.collection('jobs').find({}).sort({ createdAt: -1 }).toArray()
-    
+
     jobs = jobsData.map(job => ({
       _id: job._id.toString(),
       title: job.title,
@@ -30,18 +30,13 @@ export default async function RecruiterDashboard() {
     console.error('Error fetching jobs:', error)
   }
 
-  const formatRelativeTime = (dateString: string) => {
+  const formatDate = (dateString: string) => {
     const date = new Date(dateString)
-    const now = new Date()
-    const diffInMs = now.getTime() - date.getTime()
-    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24))
-    
-    if (diffInDays === 0) return 'Today'
-    if (diffInDays === 1) return '1 day ago'
-    if (diffInDays < 7) return `${diffInDays} days ago`
-    if (diffInDays < 14) return '1 week ago'
-    if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`
-    return `${Math.floor(diffInDays / 30)} months ago`
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
   }
 
   return (
@@ -73,19 +68,16 @@ export default async function RecruiterDashboard() {
           <h2 className="text-2xl font-semibold text-gray-900">All Job Listings</h2>
         </div>
 
-                <div className="space-y-6">
+        <div className="space-y-6">
           {jobs.length > 0 ? (
             jobs.map((job) => (
               <div key={job._id} className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">{job.title}</h3>
-                    <p className="text-gray-700 mb-4">{job.description}</p>
+                    <p className="text-gray-700 mb-4 line-clamp-3">{job.description}</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-500">{formatRelativeTime(job.createdAt)}</span>
-                      <span className="text-sm text-gray-500">
-                        {job.candidates?.length || 0} applications
-                      </span>
+                      <span className="text-sm text-gray-500">Posted on {formatDate(job.createdAt)}</span>
                     </div>
                   </div>
                   <div className="ml-6 flex flex-col gap-2">

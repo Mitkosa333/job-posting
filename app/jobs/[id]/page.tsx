@@ -37,18 +37,13 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
     console.error('Error fetching job:', error)
   }
 
-  const formatRelativeTime = (dateString: string) => {
+  const formatDate = (dateString: string) => {
     const date = new Date(dateString)
-    const now = new Date()
-    const diffInMs = now.getTime() - date.getTime()
-    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24))
-    
-    if (diffInDays === 0) return 'Today'
-    if (diffInDays === 1) return '1 day ago'
-    if (diffInDays < 7) return `${diffInDays} days ago`
-    if (diffInDays < 14) return '1 week ago'
-    if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`
-    return `${Math.floor(diffInDays / 30)} months ago`
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
   }
 
   if (!job) {
@@ -88,13 +83,8 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
         <div className="flex justify-between items-start mb-6">
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-gray-900 mb-4">{job.title}</h1>
-            <div className="flex items-center gap-4 text-gray-600 mb-4">
-              <span className="text-sm">
-                {job.candidates?.length || 0} applications
-              </span>
-            </div>
             <div className="text-sm text-gray-500">
-              Posted {formatRelativeTime(job.createdAt)}
+              Posted on {formatDate(job.createdAt)}
             </div>
           </div>
 

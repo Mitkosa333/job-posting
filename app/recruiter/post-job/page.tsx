@@ -97,8 +97,6 @@ export default function RecruiterPostJobPage() {
             />
           </div>
 
-
-
           <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t">
             <button
               type="submit"
