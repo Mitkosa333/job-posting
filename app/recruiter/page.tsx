@@ -174,7 +174,16 @@ export default function RecruiterDashboard() {
                       </h4>
                       <div className="space-y-2">
                         {candidatesToShow.map((candidate) => (
-                          <div key={candidate._id} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                          <a
+                            key={candidate._id}
+                            href={`/candidates/${candidate._id}`}
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              window.location.href = `/candidates/${candidate._id}`
+                            }}
+                            className="flex items-center justify-between bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                          >
                             <div className="flex-1">
                               <div className="font-medium text-gray-900">
                                 {candidate.firstName} {candidate.lastName}
@@ -186,7 +195,7 @@ export default function RecruiterDashboard() {
                                 {candidate.percentage}% match
                               </span>
                             </div>
-                          </div>
+                          </a>
                         ))}
                         {qualifiedCandidates.length > 3 && (
                           <button
