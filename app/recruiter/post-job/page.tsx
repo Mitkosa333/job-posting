@@ -27,11 +27,7 @@ export default function RecruiterPostJobPage() {
 
       if (response.ok) {
         const result = await response.json()
-        const matchMessage = result.candidateMatches > 0 
-          ? ` AI matching completed against ${result.candidateMatches} existing candidates.`
-          : ''
-        
-        alert(`Job posted successfully!${matchMessage}`)
+        alert('Job posted successfully!')
         // Reset form or redirect to dashboard
         setFormData({
           title: '',

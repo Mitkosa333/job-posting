@@ -110,13 +110,105 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
       </div>
 
       {/* Job Content */}
-      <div className="bg-white rounded-lg shadow-sm border p-8">
+      <div className="bg-white rounded-lg shadow-sm border p-8 mb-6">
         <div className="prose max-w-none">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Job Description</h2>
           <div className="text-gray-700 whitespace-pre-line leading-relaxed">
             {job.description}
           </div>
         </div>
+      </div>
+
+      {/* Application Form */}
+      <div className="bg-white rounded-lg shadow-sm border p-8">
+        <h2 className="text-xl font-semibold text-gray-900 mb-6">Apply for this Position</h2>
+        
+        <form action="/api/applications" method="POST" className="space-y-6">
+          <input type="hidden" name="jobId" value={job._id} />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
+                First Name *
+              </label>
+              <input
+                type="text"
+                id="firstName"
+                name="firstName"
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Your first name"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
+                Last Name *
+              </label>
+              <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Your last name"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              Email Address *
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="your.email@example.com"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="(555) 123-4567"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="resume" className="block text-sm font-medium text-gray-700 mb-2">
+              Resume/CV *
+            </label>
+            <textarea
+              id="resume"
+              name="resume"
+              required
+              rows={8}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Paste your resume content here, including your work experience, education, skills, and any other relevant information..."
+            />
+            <p className="mt-2 text-sm text-gray-500">
+              Please include your complete work history, skills, and qualifications.
+            </p>
+          </div>
+
+          <div className="pt-4">
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium transition-colors"
+            >
+              Submit Application
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   )

@@ -257,7 +257,7 @@ function RecruiterDashboardContent() {
               </div>
               <div className="ml-3">
                 <p className={`text-sm font-medium ${aiError ? 'text-yellow-800' : 'text-green-800'}`}>
-                  {aiError ? 'Job updated successfully, but AI matching encountered an issue. You can try editing the job again to re-run the matching.' : 'Job updated successfully! AI matching has been re-calculated with new candidate scores.'}
+                  {aiError ? 'Job updated successfully, but there was an issue processing candidate matches. You can try editing the job again.' : 'Job updated successfully! Candidate matching has been updated.'}
                 </p>
               </div>
               <div className="ml-auto pl-3">

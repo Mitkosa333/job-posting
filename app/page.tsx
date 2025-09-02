@@ -1,14 +1,10 @@
-import ProcessingStatus from '@/components/ProcessingStatus'
-
 interface HomePageProps {
-  searchParams: { success?: string; error?: string; processing?: string; candidateId?: string }
+  searchParams: { success?: string; error?: string }
 }
 
 export default function Home({ searchParams }: HomePageProps) {
   const showSuccess = searchParams.success === 'true'
   const showError = searchParams.error === 'true'
-  const showProcessing = searchParams.processing === 'true'
-  const candidateId = searchParams.candidateId
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -17,11 +13,6 @@ export default function Home({ searchParams }: HomePageProps) {
         <p className="text-gray-600">Please fill out the form below to apply for a position.</p>
       </div>
 
-      {/* Processing Message */}
-      {showProcessing && candidateId && (
-        <ProcessingStatus candidateId={candidateId} />
-      )}
-
       {/* Success Message */}
       {showSuccess && (
         <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
@@ -29,9 +20,9 @@ export default function Home({ searchParams }: HomePageProps) {
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            <span className="font-medium">Application submitted successfully!</span>
+            <span className="font-medium">You have successfully applied!</span>
           </div>
-          <p className="mt-1 text-sm">Thank you for your application. AI matching has been completed and your profile is now visible to recruiters.</p>
+          <p className="mt-1 text-sm">Thank you for your application. Your profile is now visible to recruiters.</p>
         </div>
       )}
 

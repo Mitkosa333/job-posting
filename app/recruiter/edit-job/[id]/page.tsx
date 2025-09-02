@@ -63,7 +63,7 @@ export default function EditJobPage({ params }: { params: { id: string } }) {
         throw new Error('Failed to update job')
       }
 
-      // Poll for AI processing completion
+      // Poll for processing completion
       const pollProcessing = async () => {
         try {
           const statusResponse = await fetch(`/api/jobs/${params.id}/processing-status`)
@@ -149,10 +149,10 @@ export default function EditJobPage({ params }: { params: { id: string } }) {
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-3"></div>
                   <div>
                     <h3 className="text-sm font-medium text-blue-800">
-                      AI Matching in Progress
+                      Updating Job Posting
                     </h3>
                     <p className="text-sm text-blue-700">
-                      Re-calculating candidate matches for the updated job posting...
+                      Processing your job updates...
                     </p>
                   </div>
                 </div>

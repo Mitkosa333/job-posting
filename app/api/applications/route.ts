@@ -6,14 +6,17 @@ import { calculateAllJobMatches } from '@/lib/openai'
 import { Types } from 'mongoose'
 
 // Async function to process AI matching in the background
-async function processAIMatchingAsync(candidateId: string, resume: string) {
+async function processAIMatchingAsync(candidateId: string, resume: string, specificJobId?: string) {
   try {
     await dbConnect()
-    console.log(`Starting background AI processing for candidate: ${candidateId}`)
+    console.log(`Starting background AI processing for candidate: ${candidateId}${specificJobId ? ` for job: ${specificJobId}` : ''}`)
     
-    // Get all active jobs
-    const jobs = await Job.find({})
-    console.log(`Found ${jobs.length} jobs for matching`)
+    // Get jobs to match against - either specific job or all jobs
+    const jobs = specificJobId 
+      ? await Job.find({ _id: specificJobId })
+      : await Job.find({})
+    
+    console.log(`Found ${jobs.length} job(s) for matching`)
 
     if (jobs.length > 0) {
       // Calculate match percentages using OpenAI
@@ -42,7 +45,7 @@ async function processAIMatchingAsync(candidateId: string, resume: string) {
         )
       }
 
-      console.log(`Successfully updated ${jobMatches.length} jobs with candidate matches`)
+      console.log(`Successfully updated ${jobMatches.length} job(s) with candidate matches`)
     } else {
       console.log(`No jobs found to match against candidate ${candidateId}`)
     }
@@ -72,23 +75,28 @@ export async function POST(request: NextRequest) {
       aiProcessed: false
     }
 
+    const jobId = formData.get('jobId') as string
+
     // Create new candidate
     const newCandidate = new Candidate(candidateData)
     const savedCandidate = await newCandidate.save()
 
-    console.log(`New candidate created: ${savedCandidate._id}`)
+    console.log(`New candidate created: ${savedCandidate._id}${jobId ? ` applying for job: ${jobId}` : ''}`)
 
-    // Redirect to processing page immediately with candidate ID
-    const processingUrl = new URL('/', request.url)
-    processingUrl.searchParams.set('processing', 'true')
-    processingUrl.searchParams.set('candidateId', savedCandidate._id.toString())
-
-    // Start AI processing asynchronously (don't await)
-    processAIMatchingAsync(savedCandidate._id.toString(), candidateData.resume).catch(error => {
+    // Start AI processing asynchronously in background (user doesn't need to know)
+    processAIMatchingAsync(
+      savedCandidate._id.toString(), 
+      candidateData.resume, 
+      jobId || undefined
+    ).catch(error => {
       console.error('Background AI processing failed:', error)
     })
 
-    return NextResponse.redirect(processingUrl)
+    // Redirect directly to success page
+    const successUrl = new URL('/', request.url)
+    successUrl.searchParams.set('success', 'true')
+
+    return NextResponse.redirect(successUrl)
   } catch (error) {
     console.error('Error processing application:', error)
 
