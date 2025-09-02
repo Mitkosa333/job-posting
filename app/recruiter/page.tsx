@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 
 interface Job {
   _id: string
@@ -22,11 +23,18 @@ interface Candidate {
   resume: string
 }
 
-export default function RecruiterDashboard() {
+function RecruiterDashboardContent() {
+  const searchParams = useSearchParams()
   const [jobs, setJobs] = useState<Job[]>([])
   const [candidates, setCandidates] = useState<Candidate[]>([])
   const [expandedJobs, setExpandedJobs] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
+  const [deletingJobId, setDeletingJobId] = useState<string | null>(null)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+
+  const updated = searchParams.get('updated')
+  const aiError = searchParams.get('aiError')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,6 +74,16 @@ export default function RecruiterDashboard() {
 
     fetchData()
   }, [])
+
+  useEffect(() => {
+    if (updated) {
+      setShowSuccessMessage(true)
+      const timer = setTimeout(() => {
+        setShowSuccessMessage(false)
+      }, 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [updated])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -142,8 +160,124 @@ export default function RecruiterDashboard() {
     })
   }
 
+  const handleDeleteJob = async (jobId: string) => {
+    setDeletingJobId(jobId)
+    try {
+      const response = await fetch(`/api/jobs/${jobId}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete job')
+      }
+
+      // Remove the job from the local state
+      setJobs(prev => prev.filter(job => job._id !== jobId))
+      setShowDeleteConfirm(null)
+      
+      console.log('Job deleted successfully')
+    } catch (error) {
+      console.error('Error deleting job:', error)
+      alert('Failed to delete job. Please try again.')
+    } finally {
+      setDeletingJobId(null)
+    }
+  }
+
+  const confirmDelete = (jobId: string) => {
+    setShowDeleteConfirm(jobId)
+  }
+
+  const cancelDelete = () => {
+    setShowDeleteConfirm(null)
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Delete Confirmation Dialog */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div className="mt-3 text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                <svg className="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mt-2">Delete Job Posting</h3>
+              <div className="mt-2 px-7 py-3">
+                <p className="text-sm text-gray-500">
+                  Are you sure you want to delete this job posting? This action cannot be undone and all candidate matches will be lost.
+                </p>
+              </div>
+              <div className="items-center px-4 py-3">
+                <div className="flex justify-center space-x-3">
+                  <button
+                    onClick={cancelDelete}
+                    className="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => showDeleteConfirm && handleDeleteJob(showDeleteConfirm)}
+                    disabled={deletingJobId === showDeleteConfirm}
+                    className="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                  >
+                    {deletingJobId === showDeleteConfirm ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Deleting...
+                      </>
+                    ) : (
+                      'Delete'
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Message */}
+      {showSuccessMessage && (
+        <div className="mb-6">
+          <div className={`rounded-md p-4 ${aiError ? 'bg-yellow-50 border border-yellow-200' : 'bg-green-50 border border-green-200'}`}>
+            <div className="flex">
+              <div className="flex-shrink-0">
+                {aiError ? (
+                  <svg className="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                ) : (
+                  <svg className="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </div>
+              <div className="ml-3">
+                <p className={`text-sm font-medium ${aiError ? 'text-yellow-800' : 'text-green-800'}`}>
+                  {aiError ? 'Job updated successfully, but AI matching encountered an issue. You can try editing the job again to re-run the matching.' : 'Job updated successfully! AI matching has been re-calculated with new candidate scores.'}
+                </p>
+              </div>
+              <div className="ml-auto pl-3">
+                <div className="-mx-1.5 -my-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setShowSuccessMessage(false)}
+                    className={`inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 ${aiError ? 'text-yellow-500 hover:bg-yellow-100 focus:ring-yellow-600' : 'text-green-500 hover:bg-green-100 focus:ring-green-600'}`}
+                  >
+                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Welcome Section */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to your Recruiter Dashboard</h1>
@@ -185,16 +319,47 @@ export default function RecruiterDashboard() {
               const candidatesToShow = isExpanded ? qualifiedCandidates : qualifiedCandidates.slice(0, 3)
               
               return (
-                <a
+                <div
                   key={job._id}
-                  href={`/jobs/${job._id}`}
-                  className="block bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow cursor-pointer"
+                  className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow"
                 >
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{job.title}</h3>
-                  <p className="text-gray-700 mb-4 line-clamp-3">{job.description}</p>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm text-gray-500">Posted on {formatDate(job.createdAt)}</span>
+                  <div className="flex items-start justify-between mb-2">
+                    <a
+                      href={`/jobs/${job._id}`}
+                      className="flex-1 cursor-pointer"
+                    >
+                      <h3 className="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors">{job.title}</h3>
+                    </a>
+                    <div className="flex space-x-2 ml-4">
+                      <a
+                        href={`/recruiter/edit-job/${job._id}`}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                        }}
+                        className="px-3 py-1 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-colors"
+                      >
+                        Edit
+                      </a>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          confirmDelete(job._id)
+                        }}
+                        className="px-3 py-1 text-sm font-medium text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
+                  <a
+                    href={`/jobs/${job._id}`}
+                    className="block cursor-pointer"
+                  >
+                    <p className="text-gray-700 mb-4 line-clamp-3">{job.description}</p>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-sm text-gray-500">Posted on {formatDate(job.createdAt)}</span>
+                    </div>
+                  </a>
                   
                   {/* Qualified Candidates Section */}
                   {qualifiedCandidates.length > 0 && (
@@ -245,7 +410,7 @@ export default function RecruiterDashboard() {
                       </div>
                     </div>
                   )}
-                </a>
+                </div>
               )
             })
           ) : (
@@ -269,5 +434,20 @@ export default function RecruiterDashboard() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function RecruiterDashboard() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    }>
+      <RecruiterDashboardContent />
+    </Suspense>
   )
 }
