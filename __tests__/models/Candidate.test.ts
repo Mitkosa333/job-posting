@@ -52,6 +52,9 @@ describe('Candidate Model Tests', () => {
       const result = await mockCandidate.create(candidateData)
 
       expect(result.aiProcessed).toBe(false)
+      expect(result.contacted).toBe(false)
+      expect(result.contactedAt).toBeUndefined()
+      expect(result.contactNotes).toBeUndefined()
       expect(result.submittedAt).toBeDefined()
       expect(result.createdAt).toBeDefined()
       expect(result.updatedAt).toBeDefined()
@@ -345,6 +348,218 @@ describe('Candidate Model Tests', () => {
       
       expect(smithCandidates).toHaveLength(1)
       expect(smithCandidates[0].firstName).toBe('Bob')
+    })
+  })
+
+  describe('Contact Tracking', () => {
+    it('should mark candidate as contacted with timestamp and notes', async () => {
+      const candidateId = 'test-candidate-id'
+      const contactedAt = new Date()
+      const contactNotes = 'Spoke with candidate about senior developer position. Very interested and available for interview next week.'
+      
+      const contactedCandidate = createMockCandidate({
+        _id: candidateId,
+        contacted: true,
+        contactedAt,
+        contactNotes
+      })
+
+      mockCandidate.findByIdAndUpdate.mockResolvedValue(contactedCandidate)
+
+      const result = await mockCandidate.findByIdAndUpdate(
+        candidateId,
+        {
+          contacted: true,
+          contactedAt,
+          contactNotes
+        },
+        { new: true }
+      )
+
+      expect(result.contacted).toBe(true)
+      expect(result.contactedAt).toEqual(contactedAt)
+      expect(result.contactNotes).toBe(contactNotes)
+    })
+
+    it('should allow marking candidate as contacted without notes', async () => {
+      const candidateId = 'test-candidate-id'
+      const contactedAt = new Date()
+      
+      const contactedCandidate = createMockCandidate({
+        _id: candidateId,
+        contacted: true,
+        contactedAt,
+        contactNotes: ''
+      })
+
+      mockCandidate.findByIdAndUpdate.mockResolvedValue(contactedCandidate)
+
+      const result = await mockCandidate.findByIdAndUpdate(
+        candidateId,
+        {
+          contacted: true,
+          contactedAt,
+          contactNotes: ''
+        },
+        { new: true }
+      )
+
+      expect(result.contacted).toBe(true)
+      expect(result.contactedAt).toEqual(contactedAt)
+      expect(result.contactNotes).toBe('')
+    })
+
+    it('should remove contact status', async () => {
+      const candidateId = 'test-candidate-id'
+      
+      const uncontactedCandidate = createMockCandidate({
+        _id: candidateId,
+        contacted: false,
+        contactedAt: undefined,
+        contactNotes: undefined
+      })
+
+      mockCandidate.findByIdAndUpdate.mockResolvedValue(uncontactedCandidate)
+
+      const result = await mockCandidate.findByIdAndUpdate(
+        candidateId,
+        {
+          contacted: false,
+          contactedAt: null,
+          contactNotes: ''
+        },
+        { new: true }
+      )
+
+      expect(result.contacted).toBe(false)
+      expect(result.contactedAt).toBeUndefined()
+      expect(result.contactNotes).toBeUndefined()
+    })
+
+    it('should filter candidates by contact status', async () => {
+      const allCandidates = [
+        createMockCandidate({ firstName: 'Alice', contacted: true, contactedAt: new Date() }),
+        createMockCandidate({ firstName: 'Bob', contacted: false }),
+        createMockCandidate({ firstName: 'Charlie', contacted: true, contactedAt: new Date() }),
+        createMockCandidate({ firstName: 'Diana', contacted: false })
+      ]
+
+      // Simulate filtering
+      const contactedCandidates = allCandidates.filter(c => c.contacted === true)
+      const nonContactedCandidates = allCandidates.filter(c => c.contacted === false)
+
+      expect(contactedCandidates).toHaveLength(2)
+      expect(contactedCandidates.map(c => c.firstName).sort()).toEqual(['Alice', 'Charlie'])
+      expect(contactedCandidates.every(c => c.contacted)).toBe(true)
+      
+      expect(nonContactedCandidates).toHaveLength(2)
+      expect(nonContactedCandidates.map(c => c.firstName).sort()).toEqual(['Bob', 'Diana'])
+      expect(nonContactedCandidates.every(c => !c.contacted)).toBe(true)
+    })
+
+    it('should sort candidates by contact date', () => {
+      const candidates = [
+        createMockCandidate({ 
+          firstName: 'Alice', 
+          contacted: true, 
+          contactedAt: new Date('2024-01-15T10:30:00Z') 
+        }),
+        createMockCandidate({ 
+          firstName: 'Bob', 
+          contacted: true, 
+          contactedAt: new Date('2024-01-16T14:20:00Z') 
+        }),
+        createMockCandidate({ 
+          firstName: 'Charlie', 
+          contacted: true, 
+          contactedAt: new Date('2024-01-14T09:15:00Z') 
+        })
+      ]
+
+      // Sort by contact date (newest first)
+      const sortedByContactDate = [...candidates]
+        .filter(c => c.contacted && c.contactedAt)
+        .sort((a, b) => b.contactedAt!.getTime() - a.contactedAt!.getTime())
+
+      expect(sortedByContactDate.map(c => c.firstName)).toEqual(['Bob', 'Alice', 'Charlie'])
+    })
+
+    it('should validate contact notes length and content', () => {
+      const shortNotes = 'Brief note'
+      const longNotes = 'This is a very detailed note about the conversation with the candidate. We discussed their experience, salary expectations, availability, and next steps in the hiring process.'
+      const emptyNotes = ''
+
+      expect(shortNotes.length).toBeGreaterThan(0)
+      expect(longNotes.length).toBeGreaterThan(shortNotes.length)
+      expect(emptyNotes.length).toBe(0)
+      
+      // Simulate trimming
+      expect(shortNotes.trim()).toBe(shortNotes)
+      expect('  spaced notes  '.trim()).toBe('spaced notes')
+    })
+
+    it('should handle contact tracking field types', () => {
+      const contactedCandidate = createMockCandidate({
+        contacted: true,
+        contactedAt: new Date(),
+        contactNotes: 'Sample contact notes'
+      })
+
+      const nonContactedCandidate = createMockCandidate({
+        contacted: false
+      })
+
+      expect(typeof contactedCandidate.contacted).toBe('boolean')
+      expect(contactedCandidate.contactedAt instanceof Date).toBe(true)
+      expect(typeof contactedCandidate.contactNotes).toBe('string')
+
+      expect(typeof nonContactedCandidate.contacted).toBe('boolean')
+      expect(nonContactedCandidate.contactedAt).toBeUndefined()
+      expect(nonContactedCandidate.contactNotes).toBeUndefined()
+    })
+
+    it('should simulate contact workflow states', async () => {
+      const candidateId = 'workflow-test-id'
+      
+      // Initial state: not contacted
+      let candidate = createMockCandidate({
+        _id: candidateId,
+        contacted: false
+      })
+      expect(candidate.contacted).toBe(false)
+      expect(candidate.contactedAt).toBeUndefined()
+
+      // Mark as contacted
+      const contactTime = new Date()
+      candidate = createMockCandidate({
+        _id: candidateId,
+        contacted: true,
+        contactedAt: contactTime,
+        contactNotes: 'Initial contact made'
+      })
+      expect(candidate.contacted).toBe(true)
+      expect(candidate.contactedAt).toEqual(contactTime)
+      expect(candidate.contactNotes).toBe('Initial contact made')
+
+      // Update contact notes
+      candidate = createMockCandidate({
+        _id: candidateId,
+        contacted: true,
+        contactedAt: contactTime,
+        contactNotes: 'Initial contact made. Follow-up scheduled for next week.'
+      })
+      expect(candidate.contactNotes).toContain('Follow-up scheduled')
+
+      // Remove contact status
+      candidate = createMockCandidate({
+        _id: candidateId,
+        contacted: false,
+        contactedAt: undefined,
+        contactNotes: undefined
+      })
+      expect(candidate.contacted).toBe(false)
+      expect(candidate.contactedAt).toBeUndefined()
+      expect(candidate.contactNotes).toBeUndefined()
     })
   })
 

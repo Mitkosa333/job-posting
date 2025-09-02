@@ -29,6 +29,9 @@ export const createMockCandidate = (overrides = {}) => ({
   phone: '+1-555-0123',
   resume: 'Experienced software developer with 5 years of experience...',
   aiProcessed: false,
+  contacted: false,
+  contactedAt: undefined,
+  contactNotes: undefined,
   submittedAt: new Date(),
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -171,6 +174,7 @@ export const expectValidCandidateObject = (candidate: any) => {
   expect(candidate).toHaveProperty('email')
   expect(candidate).toHaveProperty('resume')
   expect(candidate).toHaveProperty('aiProcessed')
+  expect(candidate).toHaveProperty('contacted')
   expect(candidate).toHaveProperty('submittedAt')
   expect(candidate).toHaveProperty('createdAt')
   expect(candidate).toHaveProperty('updatedAt')

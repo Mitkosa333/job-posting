@@ -31,6 +31,32 @@ process.env.OPENAI_API_KEY = 'test-api-key'
 // Global test utilities
 global.fetch = jest.fn()
 
+// Mock Next.js Request/Response for API route testing
+global.Request = class MockRequest {
+  constructor(url, options = {}) {
+    this.url = url
+    this.method = options.method || 'GET'
+    this.headers = new Headers(options.headers || {})
+    this._body = options.body
+  }
+  
+  async json() {
+    return JSON.parse(this._body || '{}')
+  }
+}
+
+global.Response = class MockResponse {
+  constructor(body, options = {}) {
+    this.body = body
+    this.status = options.status || 200
+    this.headers = new Headers(options.headers || {})
+  }
+  
+  json() {
+    return Promise.resolve(JSON.parse(this.body))
+  }
+}
+
 // Clean up after each test
 afterEach(() => {
   jest.clearAllMocks()

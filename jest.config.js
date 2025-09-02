@@ -27,7 +27,7 @@ const customJestConfig = {
     '!**/.next/**',
     '!**/coverage/**',
   ],
-  moduleNameMapping: {
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
