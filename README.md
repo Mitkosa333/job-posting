@@ -53,8 +53,8 @@ You can run this application in two ways: using Docker (recommended) or local de
 
 3. Update your environment variables in `.env`:
    ```env
-   # Required: MongoDB connection (Docker uses different port)
-   MONGODB_URI=mongodb://admin:password123@localhost:27018/job-board?authSource=admin
+   # Required: MongoDB connection (Docker configuration)
+   MONGODB_URI=mongodb://admin:password123@localhost:27017/job-board?authSource=admin
    
    # Required: OpenAI API key for AI matching
    OPENAI_API_KEY=your_openai_api_key_here
@@ -72,7 +72,7 @@ You can run this application in two ways: using Docker (recommended) or local de
 5. Access the application:
    - **Application**: http://localhost:3000
    - **Database UI**: http://localhost:8081 (Mongo Express)
-   - **MongoDB**: localhost:27018 (to avoid conflicts with local MongoDB)
+   - **MongoDB**: localhost:27017 (Docker MongoDB instance)
 
 6. Initialize with mock data:
    ```bash
@@ -472,7 +472,9 @@ The application uses:
 ### Troubleshooting
 
 #### Docker Issues
-- **Port conflicts**: Change ports in `docker-compose.yml` if 3000, 8081, or 27017 are in use
+- **Port conflicts**: If you have local MongoDB running, Docker will conflict on port 27017. Either:
+  - Stop local MongoDB: `sudo systemctl stop mongod` (Linux) or `brew services stop mongodb-community` (Mac)
+  - Or change Docker ports in `docker-compose.yml` from `"27017:27017"` to `"27018:27017"`
 - **Permission issues**: Ensure Docker has proper permissions on your system
 - **Build failures**: Try `docker-compose build --no-cache` for clean rebuild
 
