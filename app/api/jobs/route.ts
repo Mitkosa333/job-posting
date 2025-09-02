@@ -1,15 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
-import clientPromise from '@/lib/mongodb'
+import dbConnect from '@/lib/mongoose'
+import Job from '@/models/Job'
+import Candidate from '@/models/Candidate'
 import { calculateAllCandidateMatches } from '@/lib/openai'
-import { ObjectId } from 'mongodb'
+import { Types } from 'mongoose'
 
 // Async function to process AI matching for new jobs in the background
-async function processJobAIMatchingAsync(jobId: ObjectId, jobDescription: string, db: any) {
+async function processJobAIMatchingAsync(jobId: Types.ObjectId, jobDescription: string) {
   try {
+    await dbConnect()
     console.log(`Starting background AI processing for job: ${jobId}`)
     
     // Get all existing candidates
-    const candidates = await db.collection('candidates').find({}).toArray()
+    const candidates = await Candidate.find({})
     console.log(`Found ${candidates.length} candidates for matching`)
 
     if (candidates.length > 0) {
@@ -27,17 +30,15 @@ async function processJobAIMatchingAsync(jobId: ObjectId, jobDescription: string
       // Update the job with all candidate matches at once
       if (candidateMatches.length > 0) {
         const candidatesArray = candidateMatches.map(match => ({
-          candidateId: new ObjectId(match.candidateId),
+          candidateId: new Types.ObjectId(match.candidateId),
           percentage: match.percentage
         }))
 
-        await db.collection('jobs').updateOne(
-          { _id: jobId },
+        await Job.findByIdAndUpdate(
+          jobId,
           { 
-            $set: { 
-              candidates: candidatesArray,
-              aiProcessed: true
-            } 
+            candidates: candidatesArray,
+            aiProcessed: true
           }
         )
 
@@ -45,9 +46,9 @@ async function processJobAIMatchingAsync(jobId: ObjectId, jobDescription: string
       }
     } else {
       // No candidates to match, but still mark as processed
-      await db.collection('jobs').updateOne(
-        { _id: jobId },
-        { $set: { aiProcessed: true } }
+      await Job.findByIdAndUpdate(
+        jobId,
+        { aiProcessed: true }
       )
       console.log(`Job marked as AI processed (no candidates to match)`)
     }
@@ -59,9 +60,11 @@ async function processJobAIMatchingAsync(jobId: ObjectId, jobDescription: string
 
 export async function GET() {
   try {
-    const client = await clientPromise
-    const db = client.db('job-board')
-    const jobs = await db.collection('jobs').find({}).sort({ createdAt: -1 }).toArray()
+    await dbConnect()
+    const jobs = await Job.find({})
+      .sort({ createdAt: -1 })
+      .populate('candidates.candidateId', 'firstName lastName email')
+      .lean()
 
     return NextResponse.json(jobs)
   } catch (error) {
@@ -72,34 +75,37 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    await dbConnect()
     const body = await request.json()
+    const { title, description } = body
 
-    const job = {
-      ...body,
-      candidates: [], // Initialize empty candidates array
-      createdAt: new Date(),
-      updatedAt: new Date(),
+    if (!title || !description) {
+      return NextResponse.json(
+        { error: 'Title and description are required' },
+        { status: 400 }
+      )
     }
 
-    const client = await clientPromise
-    const db = client.db('job-board')
-    
-    // Insert the job first
-    const result = await db.collection('jobs').insertOne(job)
-    const jobId = result.insertedId
+    const newJob = new Job({
+      title,
+      description,
+      candidates: [],
+      aiProcessed: false,
+    })
 
-    console.log(`New job created: ${jobId}`)
+    const savedJob = await newJob.save()
+
+    console.log(`New job created: ${savedJob._id}`)
 
     // Start AI processing asynchronously (don't await)
-    if (job.description) {
-      processJobAIMatchingAsync(jobId, job.description, db).catch(error => {
-        console.error('Background AI processing failed for job:', error)
-      })
-    }
+    processJobAIMatchingAsync(savedJob._id, description).catch(error => {
+      console.error('Background AI processing failed for job:', error)
+    })
 
     return NextResponse.json({
       message: 'Job posted successfully! AI matching is processing in the background.',
-      jobId: jobId,
+      jobId: savedJob._id,
+      job: savedJob.toObject(),
       aiProcessing: true
     }, { status: 201 })
   } catch (error) {

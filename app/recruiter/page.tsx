@@ -77,27 +77,57 @@ export default function RecruiterDashboard() {
   }
 
   const getQualifiedCandidates = (job: Job) => {
-    if (!job.candidates) return []
+    if (!job.candidates || job.candidates.length === 0) {
+      console.log('No candidates for job:', job.title)
+      return []
+    }
+    
+    console.log(`Processing ${job.candidates.length} candidates for job: ${job.title}`)
     
     // Filter candidates with percentage > 50 and sort by percentage (highest first)
-    const qualifiedCandidateIds = job.candidates
-      .filter(candidate => (candidate.percentage || 0) > 50)
+    const qualifiedCandidates = job.candidates
+      .filter(candidate => {
+        const percentage = candidate.percentage || 0
+        console.log(`Candidate ${candidate.candidateId} has ${percentage}% match`)
+        return percentage > 50
+      })
       .sort((a, b) => (b.percentage || 0) - (a.percentage || 0))
     
-    // Get full candidate details
-    return qualifiedCandidateIds.map(jobCandidate => {
-      // Convert candidateId to string for comparison
-      const candidateIdString = jobCandidate.candidateId.toString()
-      const candidate = candidates.find(c => c._id === candidateIdString)
-      if (!candidate) {
-        console.log('Candidate not found for ID:', candidateIdString)
-        return null
+    console.log(`Found ${qualifiedCandidates.length} qualified candidates (>50%)`)
+    
+    // Handle both populated and non-populated candidate data
+    return qualifiedCandidates.map(jobCandidate => {
+      let candidateData
+      
+      // Check if candidateId is populated (object) or just an ID (string)
+      if (typeof jobCandidate.candidateId === 'object' && jobCandidate.candidateId._id) {
+        // Populated candidate data
+        candidateData = {
+          _id: jobCandidate.candidateId._id.toString(),
+          firstName: jobCandidate.candidateId.firstName,
+          lastName: jobCandidate.candidateId.lastName,
+          email: jobCandidate.candidateId.email,
+          phone: jobCandidate.candidateId.phone,
+          resume: jobCandidate.candidateId.resume
+        }
+      } else {
+        // Non-populated - find candidate from the candidates array
+        const candidateIdString = jobCandidate.candidateId.toString()
+        const candidate = candidates.find(c => c._id === candidateIdString)
+        if (!candidate) {
+          console.log('Candidate not found for ID:', candidateIdString)
+          return null
+        }
+        candidateData = candidate
       }
+      
+      console.log('Found candidate:', candidateData.firstName, candidateData.lastName, 'with', jobCandidate.percentage, '% match')
+      
       return {
-        ...candidate,
+        ...candidateData,
         percentage: jobCandidate.percentage
       }
-    }).filter(Boolean)
+    }).filter((candidate): candidate is NonNullable<typeof candidate> => candidate !== null)
   }
 
   const toggleExpanded = (jobId: string) => {

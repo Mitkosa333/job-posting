@@ -1,11 +1,12 @@
-import clientPromise from '@/lib/mongodb'
-import { ObjectId } from 'mongodb'
+import dbConnect from '@/lib/mongoose'
+import Job from '@/models/Job'
+import { Types } from 'mongoose'
 
 interface JobDetailPageProps {
   params: { id: string }
 }
 
-interface Job {
+interface JobData {
   _id: string
   title: string
   description: string
@@ -17,19 +18,36 @@ interface Job {
 }
 
 export default async function JobDetailPage({ params }: JobDetailPageProps) {
-  let job: Job | null = null
+  let job: JobData | null = null
   
   try {
-    const client = await clientPromise
-    const db = client.db('job-board')
-    const jobData = await db.collection('jobs').findOne({ _id: new ObjectId(params.id) })
+    await dbConnect()
+    
+    if (!Types.ObjectId.isValid(params.id)) {
+      return (
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Invalid Job ID</h1>
+            <p className="text-gray-600 mb-6">The job ID provided is not valid.</p>
+            <a
+              href="/recruiter"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              ← Back to Job Listings
+            </a>
+          </div>
+        </div>
+      )
+    }
+    
+    const jobData = await Job.findById(params.id)
     
     if (jobData) {
       job = {
         _id: jobData._id.toString(),
         title: jobData.title,
         description: jobData.description,
-        createdAt: jobData.createdAt,
+        createdAt: jobData.createdAt.toISOString(),
         candidates: jobData.candidates || []
       }
     }
