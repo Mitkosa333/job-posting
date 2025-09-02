@@ -16,12 +16,18 @@ interface Candidate {
   submittedAt: string
   createdAt: string
   updatedAt: string
+  contacted?: boolean
+  contactedAt?: string
+  contactNotes?: string
 }
 
 export default function CandidateDetailPage({ params }: CandidateDetailPageProps) {
   const [candidate, setCandidate] = useState<Candidate | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [contactLoading, setContactLoading] = useState(false)
+  const [showContactModal, setShowContactModal] = useState(false)
+  const [contactNotes, setContactNotes] = useState('')
 
   useEffect(() => {
     const fetchCandidate = async () => {
@@ -53,6 +59,63 @@ export default function CandidateDetailPage({ params }: CandidateDetailPageProps
       hour: '2-digit',
       minute: '2-digit'
     })
+  }
+
+  const handleMarkAsContacted = async () => {
+    setContactLoading(true)
+    try {
+      const response = await fetch(`/api/candidates/${params.id}/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ notes: contactNotes })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setCandidate(prev => prev ? {
+          ...prev,
+          contacted: true,
+          contactedAt: data.candidate.contactedAt,
+          contactNotes: data.candidate.contactNotes
+        } : null)
+        setShowContactModal(false)
+        setContactNotes('')
+      } else {
+        alert('Failed to mark candidate as contacted')
+      }
+    } catch (error) {
+      console.error('Error marking candidate as contacted:', error)
+      alert('Failed to mark candidate as contacted')
+    } finally {
+      setContactLoading(false)
+    }
+  }
+
+  const handleRemoveContactStatus = async () => {
+    setContactLoading(true)
+    try {
+      const response = await fetch(`/api/candidates/${params.id}/contact`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        setCandidate(prev => prev ? {
+          ...prev,
+          contacted: false,
+          contactedAt: undefined,
+          contactNotes: undefined
+        } : null)
+      } else {
+        alert('Failed to remove contact status')
+      }
+    } catch (error) {
+      console.error('Error removing contact status:', error)
+      alert('Failed to remove contact status')
+    } finally {
+      setContactLoading(false)
+    }
   }
 
   if (loading) {
@@ -119,11 +182,53 @@ export default function CandidateDetailPage({ params }: CandidateDetailPageProps
                 </div>
               )}
             </div>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-gray-500 mb-4">
               Application submitted on {formatDate(candidate.submittedAt)}
+            </div>
+            
+            {/* Contact Status */}
+            <div className="flex items-center gap-4">
+              {candidate.contacted ? (
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center text-green-600">
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="font-medium">Contacted</span>
+                    {candidate.contactedAt && (
+                      <span className="ml-2 text-sm text-gray-500">
+                        on {formatDate(candidate.contactedAt)}
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    onClick={handleRemoveContactStatus}
+                    disabled={contactLoading}
+                    className="px-3 py-1 text-sm font-medium text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50"
+                  >
+                    Remove Contact Status
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowContactModal(true)}
+                  disabled={contactLoading}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors disabled:opacity-50"
+                >
+                  Mark as Contacted
+                </button>
+              )}
             </div>
           </div>
         </div>
+        
+        {/* Contact Notes */}
+        {candidate.contacted && candidate.contactNotes && (
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            <h3 className="text-sm font-medium text-gray-900 mb-2">Contact Notes</h3>
+            <p className="text-sm text-gray-700 whitespace-pre-line">{candidate.contactNotes}</p>
+          </div>
+        )}
       </div>
 
       {/* Candidate Details */}
@@ -175,6 +280,51 @@ export default function CandidateDetailPage({ params }: CandidateDetailPageProps
         </div>
       </div>
 
+      {/* Contact Modal */}
+      {showContactModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Mark as Contacted</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Add any notes about your contact with {candidate.firstName} {candidate.lastName}:
+            </p>
+            
+            <textarea
+              value={contactNotes}
+              onChange={(e) => setContactNotes(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              rows={4}
+              placeholder="Optional: Add notes about your conversation, next steps, or any relevant details..."
+            />
+            
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => {
+                  setShowContactModal(false)
+                  setContactNotes('')
+                }}
+                disabled={contactLoading}
+                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleMarkAsContacted}
+                disabled={contactLoading}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center"
+              >
+                {contactLoading && (
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                )}
+                Mark as Contacted
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   )

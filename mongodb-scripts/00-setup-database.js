@@ -101,6 +101,18 @@ db.createCollection("candidates", {
           bsonType: "bool",
           description: "Whether OpenAI processing has been completed for this candidate"
         },
+        contacted: {
+          bsonType: "bool",
+          description: "Whether this candidate has been contacted by a recruiter"
+        },
+        contactedAt: {
+          bsonType: "date",
+          description: "Timestamp when candidate was contacted"
+        },
+        contactNotes: {
+          bsonType: "string",
+          description: "Notes about contact with the candidate"
+        },
         createdAt: {
           bsonType: "date",
           description: "Creation timestamp"
@@ -130,6 +142,8 @@ db.candidates.createIndex({ "submittedAt": -1 });
 db.candidates.createIndex({ "firstName": 1, "lastName": 1 });
 db.candidates.createIndex({ "createdAt": -1 });
 db.candidates.createIndex({ "aiProcessed": 1 });
+db.candidates.createIndex({ "contacted": 1 });
+db.candidates.createIndex({ "contactedAt": -1 });
 
 print("✅ Database setup completed!");
 print("📚 Collections created: jobs, candidates");

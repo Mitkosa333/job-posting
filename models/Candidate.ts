@@ -39,6 +39,17 @@ const CandidateSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  contacted: {
+    type: Boolean,
+    default: false,
+  },
+  contactedAt: {
+    type: Date,
+  },
+  contactNotes: {
+    type: String,
+    trim: true,
+  },
 }, {
   timestamps: true,
 })
@@ -49,6 +60,8 @@ CandidateSchema.index({ submittedAt: -1 })
 CandidateSchema.index({ firstName: 1, lastName: 1 })
 CandidateSchema.index({ createdAt: -1 })
 CandidateSchema.index({ aiProcessed: 1 })
+CandidateSchema.index({ contacted: 1 })
+CandidateSchema.index({ contactedAt: -1 })
 
 // Virtual for full name
 CandidateSchema.virtual('fullName').get(function() {

@@ -21,6 +21,9 @@ interface Candidate {
   email: string
   phone?: string
   resume: string
+  contacted?: boolean
+  contactedAt?: string
+  contactNotes?: string
 }
 
 function RecruiterDashboardContent() {
@@ -59,7 +62,10 @@ function RecruiterDashboardContent() {
           lastName: candidate.lastName,
           email: candidate.email,
           phone: candidate.phone,
-          resume: candidate.resume
+          resume: candidate.resume,
+          contacted: candidate.contacted,
+          contactedAt: candidate.contactedAt,
+          contactNotes: candidate.contactNotes
         })))
         
         console.log('Fetched candidates:', candidatesData.length)
@@ -126,7 +132,10 @@ function RecruiterDashboardContent() {
           lastName: jobCandidate.candidateId.lastName,
           email: jobCandidate.candidateId.email,
           phone: jobCandidate.candidateId.phone,
-          resume: jobCandidate.candidateId.resume
+          resume: jobCandidate.candidateId.resume,
+          contacted: jobCandidate.candidateId.contacted,
+          contactedAt: jobCandidate.candidateId.contactedAt,
+          contactNotes: jobCandidate.candidateId.contactNotes
         }
       } else {
         // Non-populated - find candidate from the candidates array
@@ -385,10 +394,18 @@ function RecruiterDashboardContent() {
                               </div>
                               <div className="text-sm text-gray-600">{candidate.email}</div>
                             </div>
-                            <div className="ml-4">
+                            <div className="ml-4 flex items-center gap-2">
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                 {candidate.percentage}% match
                               </span>
+                              {candidate.contacted && (
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                  <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                  </svg>
+                                  Contacted
+                                </span>
+                              )}
                             </div>
                           </a>
                         ))}

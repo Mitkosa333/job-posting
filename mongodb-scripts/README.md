@@ -17,6 +17,7 @@ This folder contains MongoDB scripts to create mock data for the job board appli
 | `02-create-candidates.js` | Create sample candidate applications | 3rd |
 | `03-link-candidates-to-jobs.js` | Link ALL candidates to ALL jobs with percentage scores | 4th |
 | `04-cleanup-data.js` | Verify data integrity and cleanup (optional) | 5th |
+| `05-migrate-contact-fields.js` | Add contact tracking fields to existing candidates (migration) | As needed |
 
 ## How to Run
 
@@ -107,6 +108,9 @@ done
   email: String (required, unique),
   phone: String,
   resume: String (required), // Professional resume text
+  contacted: Boolean (default: false), // Whether recruiter has contacted candidate
+  contactedAt: Date, // When candidate was contacted (optional)
+  contactNotes: String, // Notes about contact with candidate (optional)
   submittedAt: Date,
   createdAt: Date,
   updatedAt: Date
@@ -126,6 +130,8 @@ done
 - Index on `submittedAt` (descending)
 - Compound index on `firstName` and `lastName`
 - Index on `createdAt` (descending)
+- Index on `contacted` (for filtering contacted/non-contacted candidates)
+- Index on `contactedAt` (descending, for sorting by contact date)
 
 ## Verification
 
@@ -157,6 +163,22 @@ db.metadata.drop();
 
 Or simply re-run `00-setup-database.js` which includes cleanup.
 
+## Migration for Existing Data
+
+If you already have candidate data and need to add the new contact tracking fields:
+
+```bash
+# Run the migration script to add contact fields to existing candidates
+mongosh mongodb://localhost:27017 --file 05-migrate-contact-fields.js
+```
+
+This script will:
+- Add `contacted: false` to all existing candidates that don't have this field
+- Create indexes for the new contact fields
+- Provide a summary of the migration results
+
+**Note:** This migration is safe to run multiple times - it will only update candidates that don't already have the contact fields.
+
 ## Application Features
 
 The mock data supports testing of:
@@ -178,6 +200,13 @@ The mock data supports testing of:
 - **Complete matrix** - every candidate applies to every job
 - **Varying match scores** - realistic percentage distributions
 - **Professional profiles** - diverse backgrounds and experience levels
+
+### Contact Tracking
+- **Contact status tracking** - mark candidates as contacted/not contacted
+- **Contact timestamps** - track when candidates were contacted
+- **Contact notes** - add notes about conversations and next steps
+- **Visual indicators** - see contact status on dashboard and candidate pages
+- **Contact management** - remove contact status if needed
 
 ## Environment Variables
 
