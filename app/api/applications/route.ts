@@ -1,17 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import dbConnect from '@/lib/mongoose'
-import Job from '@/models/Job'
-import Candidate from '@/models/Candidate'
+import clientPromise from '@/lib/mongodb'
 import { calculateAllJobMatches } from '@/lib/openai'
-import { Types } from 'mongoose'
+import { ObjectId } from 'mongodb'
 
 // Async function to process AI matching in the background
-async function processAIMatchingAsync(candidateId: Types.ObjectId, resume: string) {
+async function processAIMatchingAsync(candidateId: ObjectId, resume: string, db: any) {
   try {
     console.log(`Starting background AI processing for candidate: ${candidateId}`)
     
     // Get all active jobs
-    const jobs = await Job.find({}).lean()
+    const jobs = await db.collection('jobs').find({}).toArray()
     console.log(`Found ${jobs.length} jobs for matching`)
 
     if (jobs.length > 0) {
@@ -28,8 +26,8 @@ async function processAIMatchingAsync(candidateId: Types.ObjectId, resume: strin
 
       // Update each job with the new candidate and their percentage
       for (const match of jobMatches) {
-        await Job.findByIdAndUpdate(
-          match.jobId,
+        await db.collection('jobs').updateOne(
+          { _id: new ObjectId(match.jobId) },
           {
             $push: {
               candidates: {
@@ -47,9 +45,9 @@ async function processAIMatchingAsync(candidateId: Types.ObjectId, resume: strin
     }
 
     // Mark the candidate as AI processed regardless of whether there were jobs to match
-    await Candidate.findByIdAndUpdate(
-      candidateId,
-      { aiProcessed: true }
+    await db.collection('candidates').updateOne(
+      { _id: candidateId },
+      { $set: { aiProcessed: true } }
     )
     
     console.log(`Candidate ${candidateId} marked as AI processed`)
@@ -71,24 +69,24 @@ export async function POST(request: NextRequest) {
       phone: formData.get('phone') as string,
       resume: formData.get('resume') as string,
       submittedAt: new Date(),
-      aiProcessed: false,
     }
 
-    await dbConnect()
+    const client = await clientPromise
+    const db = client.db('job-board')
 
-    // Create new candidate using Mongoose model
-    const newCandidate = new Candidate(candidateData)
-    const savedCandidate = await newCandidate.save()
+    // Insert the candidate first
+    const candidateResult = await db.collection('candidates').insertOne(candidateData)
+    const candidateId = candidateResult.insertedId
 
-    console.log(`New candidate created: ${savedCandidate._id}`)
+    console.log(`New candidate created: ${candidateId}`)
 
     // Redirect to processing page immediately with candidate ID
     const processingUrl = new URL('/', request.url)
     processingUrl.searchParams.set('processing', 'true')
-    processingUrl.searchParams.set('candidateId', savedCandidate._id.toString())
+    processingUrl.searchParams.set('candidateId', candidateId.toString())
 
     // Start AI processing asynchronously (don't await)
-    processAIMatchingAsync(savedCandidate._id, candidateData.resume).catch(error => {
+    processAIMatchingAsync(candidateId, candidateData.resume, db).catch(error => {
       console.error('Background AI processing failed:', error)
     })
 
