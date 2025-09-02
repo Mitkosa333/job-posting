@@ -48,11 +48,15 @@ You can run this application in two ways: using Docker (recommended) or local de
 
 2. Create environment file:
    ```bash
-   touch .env
+   cp .env.example .env
    ```
 
-3. Add your OpenAI API key to `.env`:
+3. Update your environment variables in `.env`:
    ```env
+   # Required: MongoDB connection (Docker uses different port)
+   MONGODB_URI=mongodb://admin:password123@localhost:27018/job-board?authSource=admin
+   
+   # Required: OpenAI API key for AI matching
    OPENAI_API_KEY=your_openai_api_key_here
    ```
 
@@ -103,15 +107,15 @@ You can run this application in two ways: using Docker (recommended) or local de
 
 3. Create environment file:
    ```bash
-   touch .env
+   cp .env.example .env
    ```
 
-4. Add your environment variables to `.env`:
+4. Update your environment variables in `.env`:
    ```env
-   # Database Configuration
+   # Required: Database Configuration
    MONGODB_URI=mongodb://localhost:27017/job-board
    
-   # OpenAI Configuration (Required for automatic candidate matching)
+   # Required: OpenAI Configuration (for automatic candidate matching)
    # Get your API key from: https://platform.openai.com/api-keys
    OPENAI_API_KEY=your_openai_api_key_here
    ```
@@ -191,6 +195,7 @@ job-board/
 ├── docker-compose.yml    # Production Docker setup
 ├── docker-compose.dev.yml # Development Docker setup
 ├── Dockerfile            # Container definition
+├── .env.example          # Example environment variables file
 ├── jest.config.js        # Jest testing configuration
 ├── jest.setup.js         # Jest setup and mocks
 ├── next.config.js        # Next.js configuration
